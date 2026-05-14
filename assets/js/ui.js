@@ -46,7 +46,7 @@
       '<footer class="site-footer"><div class="container">'+
         '<div class="footer-grid">'+
           '<div>'+
-            '<div class="brand" style="color:#fff"><span class="brand-mark">Q</span><span>'+QF.escape(S.name||"")+'</span></div>'+
+            '<div class="brand" style="color:#fff"><span>'+QF.escape(S.name||"")+'</span></div>'+
             '<p style="margin-top:1rem;color:rgba(255,255,255,.7)">'+QF.escape(S.description||"")+'</p>'+
             '<div class="social">'+
   (soc.whatsapp
@@ -74,7 +74,12 @@
 
 '<li><i class="fa-solid fa-envelope"></i> <a href="mailto:'+QF.escape(S.email||"")+'">'+QF.escape(S.email||"")+'</a></li>'+
 
-'<li><i class="fa-solid fa-location-dot"></i> '+QF.escape(S.address||"")+'</li>'+
+'<li><i class="fa-solid fa-location-dot"></i> ' +
+'<a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=' +
+encodeURIComponent(S.address || "") +
+'">' +
+QF.escape(S.address || "") +
+'</a></li>'+
 
 '<li><i class="fa-regular fa-clock"></i> '+QF.escape(S.hours||"")+'</li>'+
 

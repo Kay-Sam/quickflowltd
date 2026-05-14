@@ -5,7 +5,7 @@ window.QF_SITE = {
   tagline: "Reliable Power Solutions for Homes & Businesses",
   description:
     "Quickflow Ltd supplies brand new & fairly used diesel and gas generators, spare parts and industrial power solutions across Nigeria.",
-    whatsapp: "2348023126248", 
+    whatsapp: "2348094679105", 
     phone: "+2348135646569",
       phones: [
     "+2348135646569",

@@ -1644,3 +1644,32 @@ section {
   color: var(--muted);
   margin-top: .2rem;
 }
+.skeleton-card {
+  height: 260px;
+  border-radius: 14px;
+  background: #f3f4f6;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.6),
+    transparent
+  );
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    left: 150%;
+  }
+}

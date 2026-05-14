@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       </div>
 
-      <div style="margin-top:4rem;">
+      <div style="margin-top:4rem; margin:1rem">
         <h2>Related products</h2>
         <div class="grid grid-4" id="related"></div>
       </div>
