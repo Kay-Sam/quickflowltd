@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Products — Quickflow Ltd</title>
+<meta name="description" content="Browse generators, spare parts and industrial power equipment from top brands.">
+<meta property="og:title" content="Products — Quickflow Ltd">
+<meta property="og:description" content="Browse generators, spare parts and industrial power equipment from top brands.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="images/hero.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="icon" href="images/favicon.ico">
+</head>
+<body>
+<div id="qf-header"></div>
+<div id="qf-pagehero"></div>
+<section><div class="container">
+  <div id="products-chips" class="chips"></div>
+  <div class="toolbar">
+    <input id="products-search" type="search" placeholder="Search by name, brand or KVA…">
+    <select id="products-sort">
+      <option value="featured">Sort: Featured</option>
+      <option value="price-asc">Price: Low to High</option>
+      <option value="price-desc">Price: High to Low</option>
+    </select>
+    <span id="products-count" class="muted"></span>
+  </div>
+  <div id="products-grid" class="grid grid-4"></div>
+</div></section>
+
+<div id="qf-footer"></div>
+<script src="data/site.js"></script>
+<script src="data/categories.js"></script>
+<script src="data/products.js"></script>
+<script src="data/properties.js"></script>
+<script src="data/gallery.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/components.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/pages/products.js"></script><script>document.addEventListener("DOMContentLoaded",function(){var slug=QF.qs("cat");var c=slug?QF.findCategory(slug):null;QF.UI.pageHero({eyebrow:c?c.title:"All Products",title:c?c.title:"Our Products",description:c?c.short:"Browse our complete catalogue of generators, spare parts and power equipment.",crumbs:[{label:"Products",href:"products.html"}].concat(c?[{label:c.title}]:[])});});</script>
+</body></html>

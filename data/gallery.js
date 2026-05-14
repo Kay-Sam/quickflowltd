@@ -1,0 +1,20 @@
+window.QF_GALLERY = [
+  { src: "images/products/per-1.webp",   caption: "100KVA Perkins delivery — Lagos" },
+  { src: "images/products/cum-1.jpg", caption: "Fairly used FG Wilson workshop service" },
+  { src: "images/products/gas.jpg",         caption: "Gas generator commissioning" },
+  { src: "images/products/spare-parts.jpg", caption: "Genuine spare parts inventory" },
+  { src: "images/products/man-1.jpg",                 caption: "Industrial installation site" },
+  { src: "images/products/fm.webp",   caption: "Soundproof canopy assembly" },
+  { src: "images/products/FG-670KVA-4.jpeg",   caption: "FG Wilson 670KVA Manual" },
+  { src: "images/products/670kva-4.jpeg",   caption: "670kva marapco 2800series" },
+  { src: "images/products/gal1.jpg",   caption: "Spare parts preview" },
+  { src: "images/products/gal2.jpg",   caption: "Spare parts preview" },
+  { src: "images/products/gal3.jpg",   caption: "Spare parts preview" },
+  { src: "images/products/gal4.jpg",   caption: "Spare parts preview" },
+  { src: "images/products/sum.jpg",   caption: "SUMEC FIRMAN" },
+  { src: "images/products/generac.jpg",   caption: "Generac" },
+  { src: "images/products/of.jpeg",   caption: "Spare parts preview" },
+  { src: "images/products/mik.webp",   caption: "Milkano preview" },
+  { src: "images/products/CAT-3512-1.jpeg",   caption: "Caterpillar CAT 3512 1275KVA Generator" },
+];
+

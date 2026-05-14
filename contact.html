@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Contact — Quickflow Ltd</title>
+
+    <meta
+      name="description"
+      content="Contact Quickflow Ltd for generator sales, spare parts and power solutions in Nigeria."
+    />
+
+    <meta property="og:title" content="Contact — Quickflow Ltd" />
+    <meta
+      property="og:description"
+      content="Contact Quickflow Ltd for generator sales, spare parts and power solutions in Nigeria."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="images/hero.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="icon" href="images/favicon.ico">
+  </head>
+
+  <body>
+    <div id="qf-header"></div>
+    <div id="qf-pagehero"></div>
+
+    <!-- CONTACT -->
+    <section>
+      <div class="section-head"><span class="eyebrow">Contact us</span></div>
+      <div class="container">
+        <div class="contact-grid">
+          <!-- FORM -->
+          <form id="contact-form" class="form">
+            <div class="grid grid-2">
+              <div class="field">
+                <label>Full Name</label>
+                <input name="name" required />
+              </div>
+
+              <div class="field">
+                <label>Phone</label>
+                <input name="phone" required />
+              </div>
+            </div>
+
+            <div class="grid grid-2">
+              <div class="field">
+                <label>Email</label>
+                <input type="email" name="email" />
+              </div>
+
+              <div class="field">
+                <label>I'm interested in</label>
+
+                <select name="interest">
+                  <option>Brand New Generator</option>
+                  <option>Fairly Used Generator</option>
+                  <option>Gas Generator</option>
+                  <option>Spare Parts</option>
+                  <option>Industrial Power Solution</option>
+                  <option>Maintenance / Repair</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Message</label>
+
+              <textarea
+                name="message"
+                placeholder="Tell us about your power requirements…"
+                required
+              ></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-whatsapp btn-lg">
+              <i class="fa-brands fa-whatsapp"></i>
+              Send via WhatsApp
+            </button>
+          </form>
+
+          <!-- CONTACT INFO -->
+          <div style="display: grid; gap: 1rem; align-content: start">
+            <div class="contact-card">
+              <div class="icon">
+                <i class="fa-solid fa-phone"></i>
+              </div>
+
+              <div>
+                <h4>Phone</h4>
+                <p id="c-phone"></p>
+              </div>
+            </div>
+
+            <div class="contact-card">
+              <div class="icon">
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+
+              <div>
+                <h4>Email</h4>
+                <p id="c-email"></p>
+              </div>
+            </div>
+
+            <div class="contact-card">
+              <div class="icon">
+                <i class="fa-solid fa-location-dot"></i>
+              </div>
+
+              <div>
+                <h4>Address</h4>
+                <p id="c-addr"></p>
+              </div>
+            </div>
+
+            <div class="contact-card">
+              <div class="icon">
+                <i class="fa-regular fa-clock"></i>
+              </div>
+
+              <div>
+                <h4>Hours</h4>
+                <p id="c-hours"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAP -->
+    <section class="map-section">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Location</span>
+          <h2>Visit Our Office</h2>
+          <p>4/6 Kudiratu Abiola Way, Alausa, Ikeja, Lagos.</p>
+        </div>
+
+        <div class="map-wrap">
+          <iframe
+            src="https://www.google.com/maps?q=4/6%20Kudiratu%20Abiola%20Way%20Alausa%20Ikeja&output=embed"
+            width="100%"
+            height="420"
+            style="border: 0"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          >
+          </iframe>
+        </div>
+      </div>
+    </section>
+
+    <div id="qf-footer"></div>
+
+    <!-- SCRIPTS -->
+    <script src="data/site.js"></script>
+    <script src="data/categories.js"></script>
+    <script src="data/products.js"></script>
+    <script src="data/properties.js"></script>
+    <script src="data/gallery.js"></script>
+
+    <script src="assets/js/core.js"></script>
+    <script src="assets/js/cart.js"></script>
+    <script src="assets/js/components.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/pages/contact.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        QF.UI.pageHero({
+          eyebrow: "Contact",
+          title: "Get in Touch",
+          description:
+            "Our team is ready to help with quotes, technical advice and after-sales support.",
+          crumbs: [{ label: "Contact" }],
+        });
+
+        var s = QF_SITE;
+
+        /* PHONE */
+        document.getElementById("c-phone").innerHTML =
+          '<a href="tel:' +
+          s.phone.replace(/\s+/g, "") +
+          '">' +
+          s.phone +
+          "</a>";
+
+        /* EMAIL */
+        document.getElementById("c-email").innerHTML =
+          '<a href="mailto:' + s.email + '">' + s.email + "</a>";
+
+        /* ADDRESS */
+        document.getElementById("c-addr").textContent = s.address;
+
+        /* HOURS */
+        document.getElementById("c-hours").textContent = s.hours;
+
+        /* WHATSAPP */
+        document.getElementById("c-wa").href = QF.waLink(
+          "Hello " + s.name + ", I would like to make an enquiry.",
+        );
+      });
+    </script>
+  </body>
+</html>
