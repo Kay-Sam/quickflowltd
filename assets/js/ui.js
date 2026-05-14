@@ -22,7 +22,7 @@
     var active = (location.pathname.split("/").pop() || "index.html");
     var html =
       '<header class="site-header"><div class="container bar">'+
-        '<a class="brand" href="index.html"><span class="brand-mark">Q</span><span>'+QF.escape(S.name||"Quickflow Ltd")+'</span></a>'+
+        '<a class="brand" href="index.html"><span>'+QF.escape(S.name||"Quickflow Ltd")+'</span></a>'+
         '<nav class="nav">'+navLinks(active)+'</nav>'+
         '<div class="header-actions">'+
          '<button class="cart-btn" onclick="QF.Cart.open()" aria-label="Open cart">'+
