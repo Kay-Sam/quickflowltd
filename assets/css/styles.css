@@ -678,11 +678,10 @@ p {
    EXTRA SMALL DEVICES
 ========================= */
 @media (max-width: 480px) {
-
-  .hero h1,
-  .page-hero h1 {
-    font-size: 1.7rem;
+    .hero h1{
+    font-size: 2rem;
   }
+
 
   .hero p,
   .page-hero p {
@@ -690,7 +689,7 @@ p {
   }
 
   .hero-inner {
-    padding: 2.5rem 0 3rem;
+    padding: 1.5rem 0 3rem;
   }
 
   .hero-stat {
