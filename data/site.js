@@ -1,4 +1,4 @@
-// Edit your business info here. No build required.
+// The business info here
 window.QF_SITE = {
   name: "Quickflow Ltd",
   legalName: "Quickflow Integrated Divine Services Ltd",
@@ -16,6 +16,6 @@ window.QF_SITE = {
   address: "4/6 Kudiratu Abiola Way Alausa Ikeja",
   hours: "Mon – Sat: 8:00am – 6:00pm",
   social: {
-    whatsapp: "https://api.whatsapp.com/send?phone=2348023126248&text=Hello%2C%20I%20am%20contacting%20you%20from%20your%20website",
+    whatsapp: "https://api.whatsapp.com/send?phone=2348094679105&text=Hello%2C%20I%20am%20contacting%20you%20from%20your%20website",
   }
 };
