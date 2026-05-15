@@ -27,9 +27,12 @@
         '<div class="header-actions">'+
          '<button class="cart-btn" onclick="QF.Cart.open()" aria-label="Open cart">'+
   '<i class="fa-solid fa-cart-shopping cart-icon"></i>'+
-  (QF.Cart.count() > 0
-    ? '<span class="cart-badge">'+QF.Cart.count()+'</span>'
-    : '')+
+(function () {
+  var count = QF.Cart.count ? QF.Cart.count() : 0;
+  return count > 0
+    ? '<span class="cart-badge">' + count + '</span>'
+    : '';
+})()+
 '</button>'+
           '<button class="menu-toggle" onclick="document.getElementById(\'qf-mobile-nav\').classList.toggle(\'open\')" aria-label="Toggle menu">☰</button>'+
         '</div>'+
