@@ -6,7 +6,7 @@
 
 <title>Spare Parts Catalogue — Quickflow Ltd</title>
 <meta name="description" content="Generator spare parts — filters, fuel pumps, oil filters, and more.">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="assets/css/styles.css">
 <link rel="icon" href="images/favicon.ico">
 </head>
@@ -16,33 +16,34 @@
 <div id="qf-header"></div>
 
 <div id="qf-pagehero"></div>
-
-<section>
-  <div class="container">
-
-    <div class="toolbar">
-      <input id="spare-search" type="search" placeholder="Search spare parts...">
-      <span id="spare-count" class="muted"></span>
-    </div>
-
-    <div id="products-grid" class="grid grid-4"></div>
-
+<section><div class="container">
+  <div id="products-chips" class="chips"></div>
+  <div class="toolbar">
+    <input id="products-search" type="search" placeholder="Search by name, brand or KVA…">
+    <select id="products-sort">
+      <option value="featured">Sort: Featured</option>
+      <option value="price-asc">Price: Low to High</option>
+      <option value="price-desc">Price: High to Low</option>
+    </select>
+    <span id="products-count" class="muted"></span>
   </div>
-</section>
+  <div id="products-grid" class="grid grid-4"></div>
+</div></section>
 
 <div id="qf-footer"></div>
+<script>
+  window.FORCE_CATEGORY = "spare-parts";
+</script>
 
 <script src="data/site.js"></script>
+<script src="data/categories.js"></script>
 <script src="data/products.js"></script>
+
 <script src="assets/js/core.js"></script>
 <script src="assets/js/cart.js"></script>
+<script src="assets/js/components.js"></script>
 <script src="assets/js/ui.js"></script>
 <script src="assets/js/pages/products.js"></script>
-
-<script>
-  // FORCE FILTER
-  var FORCE_CATEGORY = "spare-parts";
-</script>
 
 </body>
 </html>

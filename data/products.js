@@ -68,6 +68,32 @@ window.QF_PRODUCTS = [
   inStock: true,
   featured: true,
 },
+ {
+  id: "caterpillar-2500kva-new",
+  name: "Caterpillar 2500KVA Diesel Generator",
+  brand: "Caterpillar",
+  category: "brand-new",
+  price: 580000000,
+  kva: "2500 KVA",
+  fuel: "Diesel",
+  phase: "3-Phase",
+
+  media: [
+    { type: "image", src: "images/products/cat-2500-1.jpeg" },
+    { type: "image", src: "images/products/cat-2500-2.jpeg" },
+    { type: "image", src: "images/products/cat-2500-5.jpeg" },
+    { type: "image", src: "images/products/cat-2500-4.jpeg" },
+    { type: "image", src: "images/products/cat-2500-3.jpeg" },
+    { type: "video", src: "videos/cat-2500.mp4" }
+  ],
+
+  shortDescription: "Brand new Caterpillar 2500KVA generator, never been used before. High-performance industrial power solution.",
+  
+  description: "Heavy-duty Caterpillar 2500KVA generator designed for industrial and mission-critical operations. Brand new condition, never been used before, ideal for factories, estates, and large-scale facilities.",
+
+  inStock: true,
+  featured: true
+},
 
 {
   id: "cat-1275kva",
@@ -608,3 +634,4 @@ window.QF_PRODUCTS = [
   inStock: true,
    featured: true
 }];
+

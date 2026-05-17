@@ -1,4 +1,26 @@
 /* Reusable card renderer */
+
+QF.renderMedia = function (media) {
+  if (!media || !media.length) return "";
+
+  return media.map(function (item) {
+
+    if (item.type === "image") {
+      return `<img src="${item.src}" class="gallery-item" loading="lazy">`;
+    }
+
+    if (item.type === "video") {
+      return `
+        <video class="gallery-item" controls>
+          <source src="${item.src}" type="video/mp4">
+        </video>
+      `;
+    }
+
+    return "";
+
+  }).join("");
+};
 QF.productCardHTML = function (p) {
   var stockClass = p.inStock === false ? "stock-out" : "stock-in";
 
@@ -45,37 +67,24 @@ QF.productCardHTML = function (p) {
   return `
     <article class="card">
 
-      <a
-        class="card-img"
-        href="product.html?id=${encodeURIComponent(p.id)}">
+<a class="card-img" href="product.html?id=${encodeURIComponent(p.id)}">
 
-        <img
-          src="${QF.escape(p.image)}"
-          alt="${QF.escape(p.name)}"
-          loading="lazy"
-        >
+<div class="card-media">
+  ${QF.renderMedia
+    ? QF.renderMedia(
+        p.media && p.media.length
+          ? p.media
+          : [{ type: "image", src: p.image }]
+      )
+    : `<img src="${QF.escape(p.image)}" alt="${QF.escape(p.name)}">`
+  }
+</div>
 
-        ${
-          p.kva
-            ? `
-            <span class="tag tag-kva">
-              ${QF.escape(p.kva)}
-            </span>
-          `
-            : ""
-        }
+  ${p.kva ? `<span class="tag tag-kva">${QF.escape(p.kva)}</span>` : ""}
 
-        ${
-          p.featured
-            ? `
-            <span class="tag tag-featured">
-              Featured
-            </span>
-          `
-            : ""
-        }
+  ${p.featured ? `<span class="tag tag-featured">Featured</span>` : ""}
 
-      </a>
+</a>
 
       <div class="card-body">
 
@@ -140,3 +149,4 @@ QF.categoryCardHTML = function (c) {
     </a>
   `;
 };
+

@@ -1,10 +1,19 @@
 /* Products listing — search, filter, sort, deep-link via ?cat= */
 (function(){
-  var state = { cat: QF.qs("cat")||"all", q:"", sort:"featured" };
+    var state = {
+      cat: QF.qs("cat") || "all",
+      q: "",
+      sort: "featured"
+    };
 
   function render(){
     var pool = (window.QF_PRODUCTS||[]).slice();
-    if(state.cat!=="all") pool = pool.filter(function(p){return p.category===state.cat;});
+      // CATEGORY FILTER (THIS IS REQUIRED)
+    if (state.cat !== "all") {
+      pool = pool.filter(function(p){
+        return p.category === state.cat;
+      });
+    }
     if(state.q){
       var q = state.q.toLowerCase();
       pool = pool.filter(function(p){
@@ -24,6 +33,8 @@
       c.classList.toggle("active", c.dataset.cat===state.cat);
     });
   }
+
+
 
   document.addEventListener("DOMContentLoaded", function(){
     var chips = QF.byId("products-chips");

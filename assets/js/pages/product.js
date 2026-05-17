@@ -29,15 +29,21 @@ document.addEventListener("DOMContentLoaded", function () {
     ].filter(Boolean),
   });
 
-    document.getElementById("img-close").addEventListener("click", function () {
-    document.getElementById("img-modal").style.display = "none";
-  });
 
-  document.getElementById("img-modal").addEventListener("click", function (e) {
-    if (e.target.id === "img-modal") {
-      this.style.display = "none";
-    }
-  });
+/* =========================
+   MODAL CLOSE HANDLER
+========================= */
+
+document.getElementById("img-close").addEventListener("click", function () {
+  document.getElementById("img-modal").style.display = "none";
+});
+
+document.getElementById("img-modal").addEventListener("click", function (e) {
+  if (e.target.id === "img-modal") {
+    this.style.display = "none";
+  }
+});
+
   document.title = p.name + " — " + (QF_SITE.name || "");
 
   /* =========================
@@ -104,72 +110,246 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /* =========================
-     IMAGE SLIDER
-  ========================= */
+     /* =========================
+   MEDIA SLIDER
+========================= */
 
-  var images =
-    Array.isArray(p.images) && p.images.length
-      ? p.images
-      : p.image
-      ? [p.image]
-      : ["images/products/placeholder.jpg"];
+var media =
+  Array.isArray(p.media) && p.media.length
+    ? p.media
+    : Array.isArray(p.images) && p.images.length
+    ? p.images.map(function (img) {
+        return {
+          type: "image",
+          src: img
+        };
+      })
+    : p.image
+    ? [{
+        type: "image",
+        src: p.image
+      }]
+    : [{
+        type: "image",
+        src: "images/products/placeholder.jpg"
+      }];
 
-  var currentIndex = 0;
+var currentIndex = 0;
 
-  var galleryHTML = `
-    <div class="product-gallery">
+/* =========================
+   RENDER MEDIA
+========================= */
 
-      <div class="slider">
+function renderMainMedia(item) {
 
-        ${
-          images.length > 1
-            ? `
-          <button class="slider-btn prev" id="prevImg">
-            ‹
-          </button>
-        `
-            : ""
-        }
+  /* VIDEO */
+  if (item.type === "video") {
+    return `
+      <video
+        id="main-product-media"
+        class="main-product-video"
+        controls
+        playsinline
+        preload="metadata">
 
-        <img
-          id="main-product-img"
-          src="${QF.escape(images[0])}"
-          alt="${QF.escape(p.name)}"
-        >
+        <source src="${item.src}" type="video/mp4">
 
-        ${
-          images.length > 1
-            ? `
-          <button class="slider-btn next" id="nextImg">
-            ›
-          </button>
-        `
-            : ""
-        }
+      </video>
+    `;
+  }
 
+  /* IMAGE */
+  return `
+    <img
+      id="main-product-media"
+      class="main-product-image"
+      src="${item.src}"
+      alt="${QF.escape(p.name)}">
+  `;
+}
+
+/* =========================
+   GALLERY HTML
+========================= */
+
+var galleryHTML = `
+  <div class="product-gallery">
+
+    <div class="slider">
+
+      ${
+        media.length > 1
+          ? `
+        <button class="slider-btn prev" id="prevImg">
+          ‹
+        </button>
+      `
+          : ""
+      }
+
+      <div id="main-slide">
+        ${renderMainMedia(media[0])}
       </div>
 
       ${
-        images.length > 1
+        media.length > 1
           ? `
-        <div class="slider-dots">
-          ${images
-            .map(function (_, i) {
-              return `
-                <span
-                  class="dot ${i === 0 ? "active" : ""}"
-                  data-index="${i}">
-                </span>
-              `;
-            })
-            .join("")}
-        </div>
+        <button class="slider-btn next" id="nextImg">
+          ›
+        </button>
       `
           : ""
       }
 
     </div>
-  `;
+
+    ${
+      media.length > 1
+        ? `
+      <div class="slider-dots">
+
+        ${media
+          .map(function (_, i) {
+            return `
+              <span
+                class="dot ${i === 0 ? "active" : ""}"
+                data-index="${i}">
+              </span>
+            `;
+          })
+          .join("")}
+
+      </div>
+    `
+        : ""
+    }
+
+  </div>
+`;
+
+/* =========================
+   UPDATE SLIDER
+========================= */
+
+function updateSlider(index) {
+
+  currentIndex = index;
+
+  var container = document.getElementById("main-slide");
+
+  if (!container) return;
+
+  container.innerHTML =
+    renderMainMedia(media[currentIndex]);
+
+  /* UPDATE DOTS */
+  var dots = document.querySelectorAll(".dot");
+
+  dots.forEach(function (dot) {
+    dot.classList.remove("active");
+  });
+
+  if (dots[currentIndex]) {
+    dots[currentIndex].classList.add("active");
+  }
+}
+
+/* =========================
+   IMAGE MODAL
+========================= */
+
+function openImageModal(src, caption) {
+
+  var modal =
+    document.getElementById("img-modal");
+
+  var modalImg =
+    document.getElementById("img-modal-src");
+
+  var captionBox =
+    document.getElementById("img-modal-caption");
+
+  if (!modal) return;
+
+  modal.style.display = "flex";
+
+  modalImg.src = src;
+
+  captionBox.textContent = caption || "";
+}
+
+/* =========================
+   GLOBAL CLICK EVENTS
+========================= */
+
+document.addEventListener("click", function (e) {
+
+  /* NEXT */
+  if (e.target.id === "nextImg") {
+
+    currentIndex =
+      (currentIndex + 1) % media.length;
+
+    updateSlider(currentIndex);
+  }
+
+  /* PREVIOUS */
+  if (e.target.id === "prevImg") {
+
+    currentIndex =
+      (currentIndex - 1 + media.length) %
+      media.length;
+
+    updateSlider(currentIndex);
+  }
+
+  /* DOTS */
+  if (e.target.classList.contains("dot")) {
+
+    updateSlider(
+      parseInt(e.target.dataset.index)
+    );
+  }
+
+  /* IMAGE MODAL */
+  if (
+    e.target.id === "main-product-media" &&
+    e.target.tagName === "IMG"
+  ) {
+
+    openImageModal(
+      e.target.src,
+      e.target.alt
+    );
+  }
+
+});
+
+/* =========================
+   MODAL CLOSE
+========================= */
+
+document
+  .getElementById("img-close")
+  .addEventListener("click", function () {
+
+    document.getElementById(
+      "img-modal"
+    ).style.display = "none";
+
+});
+
+document
+  .getElementById("img-modal")
+  .addEventListener("click", function (e) {
+
+    if (e.target.id === "img-modal") {
+
+      this.style.display = "none";
+    }
+
+});
+
 
   /* =========================
      PRICE
@@ -186,7 +366,7 @@ document.addEventListener("DOMContentLoaded", function () {
   ? `
     <a
       class="btn btn-primary btn-lg"
-      href="spare-parts.html">
+      href="products.html?cat=spare-parts"">
       View Spare Parts Catalogue
     </a>
 
@@ -237,40 +417,6 @@ document.addEventListener("DOMContentLoaded", function () {
     </a>
   `;
 
-  // var actionButtons = p.price
-  //   ? `
-  //     <button
-  //       class="btn btn-primary btn-lg"
-  //       onclick="QF.Cart.add('${p.id}')">
-  //       Add to Cart
-  //     </button>
-
-  //     <a
-  //       class="btn btn-whatsapp btn-lg"
-  //       target="_blank"
-  //       rel="noopener"
-  //       href="${QF.waLink(
-  //         "Hello, I'd like to enquire about: " +
-  //           p.name +
-  //           " (" +
-  //           QF.fmtNGN(p.price) +
-  //           ")."
-  //       )}">
-  //       Enquire on WhatsApp
-  //     </a>
-  //   `
-  //   : `
-  //     <a
-  //       class="btn btn-whatsapp btn-lg"
-  //       target="_blank"
-  //       rel="noopener"
-  //       href="${QF.waLink(
-  //         "Hello, I'd like to enquire about the price for: " +
-  //           p.name
-  //       )}">
-  //       Request Price on WhatsApp
-  //     </a>
-  //   `;
 
   /* =========================
      RENDER PAGE
@@ -342,79 +488,7 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
   `;
 
-  /* =========================
-     SLIDER LOGIC
-  ========================= */
-function updateSlider(i) {
-  var img = document.getElementById("main-product-img");
-  var dots = document.querySelectorAll(".dot");
 
-  if (!img) return;
-
-  currentIndex = i;
-
-  img.src = images[currentIndex];
-
-  dots.forEach(function (d) {
-    d.classList.remove("active");
-  });
-
-  if (dots[currentIndex]) {
-    dots[currentIndex].classList.add("active");
-  }
-}
-
-document.addEventListener("click", function (e) {
-
-  /* OPEN MODAL */
-  if (e.target.id === "main-product-img") {
-    openImageModal(e.target.src, e.target.alt);
-  }
-
-  /* NEXT */
-  if (e.target.id === "nextImg") {
-    currentIndex = (currentIndex + 1) % images.length;
-    updateSlider(currentIndex);
-  }
-
-  /* PREV */
-  if (e.target.id === "prevImg") {
-    currentIndex = (currentIndex - 1 + images.length) % images.length;
-    updateSlider(currentIndex);
-  }
-
-  /* DOTS */
-  if (e.target.classList.contains("dot")) {
-    updateSlider(parseInt(e.target.dataset.index));
-  }
-});
-
-
-function openImageModal(src, caption) {
-  var modal = document.getElementById("img-modal");
-  var modalImg = document.getElementById("img-modal-src");
-  var captionBox = document.getElementById("img-modal-caption");
-
-  if (!modal) return;
-
-  modal.style.display = "flex";
-  modalImg.src = src;
-  captionBox.textContent = caption || "";
-}
-
-/* =========================
-   MODAL CLOSE HANDLER
-========================= */
-
-document.getElementById("img-close").addEventListener("click", function () {
-  document.getElementById("img-modal").style.display = "none";
-});
-
-document.getElementById("img-modal").addEventListener("click", function (e) {
-  if (e.target.id === "img-modal") {
-    this.style.display = "none";
-  }
-});
   
   /* =========================
      RELATED PRODUCTS
