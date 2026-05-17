@@ -18,31 +18,78 @@
     }).join("");
   }
 
-  function injectHeader(){
-    var active = (location.pathname.split("/").pop() || "index.html");
-    var html =
-      '<header class="site-header"><div class="container bar">'+
-        '<a class="brand" href="index.html"><span>'+QF.escape(S.name||"Quickflow Ltd")+'</span></a>'+
-        '<nav class="nav">'+navLinks(active)+'</nav>'+
-        '<div class="header-actions">'+
-         '<button class="cart-btn" onclick="QF.Cart.open()" aria-label="Open cart">'+
-  '<i class="fa-solid fa-cart-shopping cart-icon"></i>'+
-(function () {
+/* HEADER */
+function injectHeader(){
+
+  var active = (location.pathname.split("/").pop() || "index.html");
+
   var count = QF.Cart.count ? QF.Cart.count() : 0;
-  return count > 0
-    ? '<span class="cart-badge">' + count + '</span>'
-    : '';
-})()+
-'</button>'+
-          '<button class="menu-toggle" onclick="document.getElementById(\'qf-mobile-nav\').classList.toggle(\'open\')" aria-label="Toggle menu">☰</button>'+
-        '</div>'+
+
+  var html =
+    '<header class="site-header"><div class="container bar">'+
+
+      '<a class="brand" href="index.html">'+
+        '<span>'+QF.escape(S.name||"Quickflow Ltd")+'</span>'+
+      '</a>'+
+
+      '<nav class="nav">'+navLinks(active)+'</nav>'+
+
+      '<div class="header-actions">'+
+
+        '<button class="cart-btn" onclick="QF.Cart.open()" aria-label="Open cart">'+
+          '<i class="fa-solid fa-cart-shopping cart-icon"></i>'+
+
+          (count > 0
+            ? '<span class="cart-badge">'+count+'</span>'
+            : '')+
+
+        '</button>'+
+
+        '<button class="menu-toggle" onclick="document.getElementById(\'qf-mobile-nav\').classList.toggle(\'open\')" aria-label="Toggle menu">☰</button>'+
+
       '</div>'+
-      '<div class="container"><nav id="qf-mobile-nav" class="mobile-nav">'+navLinks(active)+'</nav></div>'+
-      '</header>';
-    var slot = document.getElementById("qf-header");
-    if(slot) slot.outerHTML = html;
+
+    '</div>'+
+
+    '<div class="container">'+
+      '<nav id="qf-mobile-nav" class="mobile-nav">'+
+        navLinks(active)+
+      '</nav>'+
+    '</div>'+
+
+    '</header>';
+
+  var slot = document.getElementById("qf-header");
+
+  if(slot) slot.outerHTML = html;
+}
+
+
+/* UPDATE CART BADGE */
+function updateCartBadge(){
+
+  var btn = document.querySelector(".cart-btn");
+
+  if(!btn) return;
+
+  var oldBadge = btn.querySelector(".cart-badge");
+
+  if(oldBadge){
+    oldBadge.remove();
   }
 
+  var count = QF.Cart.count ? QF.Cart.count() : 0;
+
+  if(count > 0){
+
+    btn.insertAdjacentHTML(
+      "beforeend",
+      '<span class="cart-badge">'+count+'</span>'
+    );
+
+  }
+
+}
   function injectFooter(){
     var soc = S.social||{};
     var html =
@@ -138,29 +185,50 @@ function pageHero(opts){
     '</div></section>';
 }
 
-  QF.UI = { injectHeader:injectHeader, injectFooter:injectFooter, injectDrawer:injectDrawer, pageHero:pageHero };
+QF.UI = {
+  injectHeader: injectHeader,
+  injectFooter: injectFooter,
+  injectDrawer: injectDrawer,
+  pageHero: pageHero,
+  updateCartBadge: updateCartBadge
+};
+document.addEventListener("DOMContentLoaded", function () {
 
-  document.addEventListener("DOMContentLoaded", function(){
-    document.title = (document.title || S.name) + (document.title.indexOf(S.name)>-1?"":" — "+(S.name||""));
-    injectHeader();
-    injectFooter();
-    injectDrawer();
+  document.title =
+    (document.title || S.name) +
+    (document.title.indexOf(S.name) > -1
+      ? ""
+      : " — " + (S.name || ""));
+
+  injectHeader();
+  injectFooter();
+  injectDrawer();
 
   const fab = document.querySelector(".wa-fab");
   const hero = document.querySelector(".hero");
 
-  if (!fab || !hero) return;
+  if (!fab) return;
 
-  const triggerPoint = hero.offsetHeight * 0.6;
+  /* HOMEPAGE */
+  if (hero) {
 
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > triggerPoint) {
-      fab.classList.add("show");
-    } else {
-      fab.classList.remove("show");
-    }
-  });
+    const triggerPoint = hero.offsetHeight * 0.6;
+
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > triggerPoint) {
+        fab.classList.add("show");
+      } else {
+        fab.classList.remove("show");
+      }
+    });
+
+  }
+
+  /* OTHER PAGES */
+  else {
+    fab.classList.add("show");
+  }
+
 });
-
   
 })();

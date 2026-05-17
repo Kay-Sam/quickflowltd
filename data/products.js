@@ -301,6 +301,21 @@ window.QF_PRODUCTS = [
   inStock: true
 },
   {
+    id: "spare-parts-catalogue",
+    name: "Spare Parts Catalogue",
+    category: "spare-parts",
+    price: null,
+    image: "images/products/spare-parts-1.jpg",
+    images: [
+      "images/products/spare-parts-1.jpg",
+      "images/products/spare-parts-2.jpg"
+    ],
+    shortDescription: "Complete list of generator spare parts with pricing and availability.",
+    inStock: true,
+    catalog: true,
+    featured: true
+  },
+  {
     id: "fuel-filter-perkins",
     name: "Perkins Fuel Filter (Set of 4)",
     brand: "Perkins",
@@ -308,8 +323,11 @@ window.QF_PRODUCTS = [
     price: null,
     image: "images/products/per-1.webp",
     shortDescription: "Original Perkins fuel filter — fits 1103/1104 engines.",
-    inStock: true
+    inStock: true,
+     featured: true
   },
+
+  
   {
     id: "alternator-stamford-100kva",
     name: "Stamford Alternator 100KVA",
@@ -395,6 +413,9 @@ window.QF_PRODUCTS = [
   "shortDescription": "250A Automatic Transfer Switch panel for seamless generator and mains power grid changeover.",
   "inStock": true
 },
+
+
+
   {
   id: "air-filter-901517",
   name: "Air Filter Element 901-517",
@@ -584,5 +605,6 @@ window.QF_PRODUCTS = [
       "images/products/shaft.jpg"
     ],
   shortDescription: "Industrial shaft seal for generator engines.",
-  inStock: true
+  inStock: true,
+   featured: true
 }];

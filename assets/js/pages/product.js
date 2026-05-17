@@ -29,6 +29,15 @@ document.addEventListener("DOMContentLoaded", function () {
     ].filter(Boolean),
   });
 
+    document.getElementById("img-close").addEventListener("click", function () {
+    document.getElementById("img-modal").style.display = "none";
+  });
+
+  document.getElementById("img-modal").addEventListener("click", function (e) {
+    if (e.target.id === "img-modal") {
+      this.style.display = "none";
+    }
+  });
   document.title = p.name + " — " + (QF_SITE.name || "");
 
   /* =========================
@@ -173,41 +182,95 @@ document.addEventListener("DOMContentLoaded", function () {
   /* =========================
      ACTION BUTTONS
   ========================= */
+  var actionButtons = p.catalog
+  ? `
+    <a
+      class="btn btn-primary btn-lg"
+      href="spare-parts.html">
+      View Spare Parts Catalogue
+    </a>
 
-  var actionButtons = p.price
-    ? `
-      <button
-        class="btn btn-primary btn-lg"
-        onclick="QF.Cart.add('${p.id}')">
-        Add to Cart
-      </button>
+    <a class="btn btn-secondary btn-lg" href="doc/SPARE PARTS.pdf" target="_blank">
+    View Price List (PDF)
+  </a>
 
-      <a
-        class="btn btn-whatsapp btn-lg"
-        target="_blank"
-        rel="noopener"
-        href="${QF.waLink(
-          "Hello, I'd like to enquire about: " +
-            p.name +
-            " (" +
-            QF.fmtNGN(p.price) +
-            ")."
-        )}">
-        Enquire on WhatsApp
-      </a>
-    `
-    : `
-      <a
-        class="btn btn-whatsapp btn-lg"
-        target="_blank"
-        rel="noopener"
-        href="${QF.waLink(
-          "Hello, I'd like to enquire about the price for: " +
-            p.name
-        )}">
-        Request Price on WhatsApp
-      </a>
-    `;
+    <a
+      class="btn btn-whatsapp btn-lg"
+      target="_blank"
+      rel="noopener"
+      href="${QF.waLink("Hello, I want the spare parts catalogue details")}">
+      Request on WhatsApp
+    </a>
+  `
+  : p.price
+  ? `
+    <button
+      class="btn btn-primary btn-lg"
+      onclick="QF.Cart.add('${p.id}')">
+      Add to Cart
+    </button>
+
+    <a
+      class="btn btn-whatsapp btn-lg"
+      target="_blank"
+      rel="noopener"
+      href="${QF.waLink(
+        "Hello, I'd like to enquire about: " +
+          p.name +
+          " (" +
+          QF.fmtNGN(p.price) +
+          ")."
+      )}">
+      Enquire on WhatsApp
+    </a>
+  `
+  : `
+    <a
+      class="btn btn-whatsapp btn-lg"
+      target="_blank"
+      rel="noopener"
+      href="${QF.waLink(
+        "Hello, I'd like to enquire about the price for: " +
+          p.name
+      )}">
+      Request Price on WhatsApp
+    </a>
+  `;
+
+  // var actionButtons = p.price
+  //   ? `
+  //     <button
+  //       class="btn btn-primary btn-lg"
+  //       onclick="QF.Cart.add('${p.id}')">
+  //       Add to Cart
+  //     </button>
+
+  //     <a
+  //       class="btn btn-whatsapp btn-lg"
+  //       target="_blank"
+  //       rel="noopener"
+  //       href="${QF.waLink(
+  //         "Hello, I'd like to enquire about: " +
+  //           p.name +
+  //           " (" +
+  //           QF.fmtNGN(p.price) +
+  //           ")."
+  //       )}">
+  //       Enquire on WhatsApp
+  //     </a>
+  //   `
+  //   : `
+  //     <a
+  //       class="btn btn-whatsapp btn-lg"
+  //       target="_blank"
+  //       rel="noopener"
+  //       href="${QF.waLink(
+  //         "Hello, I'd like to enquire about the price for: " +
+  //           p.name
+  //       )}">
+  //       Request Price on WhatsApp
+  //     </a>
+  //   `;
 
   /* =========================
      RENDER PAGE
@@ -282,53 +345,77 @@ document.addEventListener("DOMContentLoaded", function () {
   /* =========================
      SLIDER LOGIC
   ========================= */
+function updateSlider(i) {
+  var img = document.getElementById("main-product-img");
+  var dots = document.querySelectorAll(".dot");
 
-  function updateSlider(i) {
-    var img = document.getElementById("main-product-img");
-    var dots = document.querySelectorAll(".dot");
+  if (!img) return;
 
-    if (!img) return;
+  currentIndex = i;
 
-    currentIndex = i;
+  img.src = images[currentIndex];
 
-    img.src = images[currentIndex];
-
-    dots.forEach(function (d) {
-      d.classList.remove("active");
-    });
-
-    if (dots[currentIndex]) {
-      dots[currentIndex].classList.add("active");
-    }
-  }
-
-  document.addEventListener("click", function (e) {
-
-    /* NEXT */
-    if (e.target.id === "nextImg") {
-      currentIndex =
-        (currentIndex + 1) % images.length;
-
-      updateSlider(currentIndex);
-    }
-
-    /* PREV */
-    if (e.target.id === "prevImg") {
-      currentIndex =
-        (currentIndex - 1 + images.length) %
-        images.length;
-
-      updateSlider(currentIndex);
-    }
-
-    /* DOTS */
-    if (e.target.classList.contains("dot")) {
-      updateSlider(
-        parseInt(e.target.dataset.index)
-      );
-    }
+  dots.forEach(function (d) {
+    d.classList.remove("active");
   });
 
+  if (dots[currentIndex]) {
+    dots[currentIndex].classList.add("active");
+  }
+}
+
+document.addEventListener("click", function (e) {
+
+  /* OPEN MODAL */
+  if (e.target.id === "main-product-img") {
+    openImageModal(e.target.src, e.target.alt);
+  }
+
+  /* NEXT */
+  if (e.target.id === "nextImg") {
+    currentIndex = (currentIndex + 1) % images.length;
+    updateSlider(currentIndex);
+  }
+
+  /* PREV */
+  if (e.target.id === "prevImg") {
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    updateSlider(currentIndex);
+  }
+
+  /* DOTS */
+  if (e.target.classList.contains("dot")) {
+    updateSlider(parseInt(e.target.dataset.index));
+  }
+});
+
+
+function openImageModal(src, caption) {
+  var modal = document.getElementById("img-modal");
+  var modalImg = document.getElementById("img-modal-src");
+  var captionBox = document.getElementById("img-modal-caption");
+
+  if (!modal) return;
+
+  modal.style.display = "flex";
+  modalImg.src = src;
+  captionBox.textContent = caption || "";
+}
+
+/* =========================
+   MODAL CLOSE HANDLER
+========================= */
+
+document.getElementById("img-close").addEventListener("click", function () {
+  document.getElementById("img-modal").style.display = "none";
+});
+
+document.getElementById("img-modal").addEventListener("click", function (e) {
+  if (e.target.id === "img-modal") {
+    this.style.display = "none";
+  }
+});
+  
   /* =========================
      RELATED PRODUCTS
   ========================= */

@@ -77,11 +77,18 @@
       '<button class="btn btn-ghost btn-block btn-sm" style="margin-top:.4rem" onclick="QF.Cart.clear()">Clear cart</button>';
   }
 
-  Cart.onChange(function(){
+Cart.onChange(function(){
+
+  // update header badge immediately
+  if (QF.UI && QF.UI.updateCartBadge) {
+    QF.UI.updateCartBadge();
+  } else {
     var b = document.querySelector(".cart-badge");
     if(b) b.textContent = Cart.count();
-    renderDrawer();
-  });
+  }
+
+  renderDrawer();
+});
 
   QF.Cart = Cart;
 })();

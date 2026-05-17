@@ -348,6 +348,7 @@ p {
   .hero-inner {
     grid-template-columns: 1.1fr 1fr;
     padding: 2rem 0 6rem;
+    margin: 20px;
   }
 }
 .hero h1,
