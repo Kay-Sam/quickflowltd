@@ -370,7 +370,7 @@ document
       View Spare Parts Catalogue
     </a>
 
-    <a class="btn btn-secondary btn-lg" href="doc/SPARE PARTS.pdf" target="_blank">
+    <a class="btn btn-outline btn-lg" href="doc/SPARE PARTS.pdf" target="_blank">
     View Price List (PDF)
   </a>
 

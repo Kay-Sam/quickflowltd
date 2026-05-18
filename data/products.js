@@ -126,11 +126,15 @@ window.QF_PRODUCTS = [
   kva: "670 KVA",
   fuel: "Diesel",
   phase: "3-Phase",
-  image: "images/products/FG-670KVA-1.jpeg",
+  image: "images/products/fg-8.jpeg",
           images: [
-      "images/products/FG-670KVA-1.jpeg",
+      "images/products/fg-8.jpeg",
+      "images/products/fg-7.jpeg",
       "images/products/FG-670KVA-2.jpeg",
-      "images/products/FG-670KVA-3.jpeg"
+      "images/products/FG-670KVA-3.jpeg",
+      "images/products/fg-6.jpeg",
+      "images/products/fg-5.jpeg",
+      "images/products/fg-1.jpeg"
     ],
   shortDescription: "FG Wilson 2800 Series industrial generator in excellent working condition.",
   featured: true,
@@ -331,8 +335,9 @@ window.QF_PRODUCTS = [
     name: "Spare Parts Catalogue",
     category: "spare-parts",
     price: null,
-    image: "images/products/spare-parts-1.jpg",
+    image: "images/products/spare-parts-4.jpg",
     images: [
+      "images/products/spare-parts-4.jpg",
       "images/products/spare-parts-1.jpg",
       "images/products/spare-parts-2.jpg"
     ],
