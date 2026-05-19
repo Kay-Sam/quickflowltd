@@ -77,7 +77,7 @@ window.QF_PRODUCTS = [
   kva: "2500 KVA",
   fuel: "Diesel",
   phase: "3-Phase",
-
+  image: "images/products/cat-2500-1.jpeg",
   media: [
     { type: "image", src: "images/products/cat-2500-1.jpeg" },
     { type: "image", src: "images/products/cat-2500-2.jpeg" },
