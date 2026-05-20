@@ -366,11 +366,14 @@ document
   ? `
     <a
       class="btn btn-primary btn-lg"
-      href="products.html?cat=spare-parts"">
+      href="products.html?cat=spare-parts">
       View Spare Parts Catalogue
     </a>
 
-    <a class="btn btn-outline btn-lg" href="doc/SPARE PARTS.pdf" target="_blank">
+<a
+  class="btn btn-outline btn-lg"
+  href="${p.pdf || '#'}"
+  target="_blank">
     View Price List (PDF)
   </a>
 

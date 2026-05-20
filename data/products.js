@@ -330,22 +330,62 @@ window.QF_PRODUCTS = [
   shortDescription: "Compact 2.5 KVA / 2 KW Haier Thermocool gas generator ideal for homes and small businesses.",
   inStock: true
 },
-  {
-    id: "spare-parts-catalogue",
-    name: "Spare Parts Catalogue",
-    category: "spare-parts",
-    price: null,
-    image: "images/products/spare-parts-4.jpg",
-    images: [
-      "images/products/spare-parts-4.jpg",
-      "images/products/spare-parts-1.jpg",
-      "images/products/spare-parts-2.jpg"
-    ],
-    shortDescription: "Complete list of generator spare parts with pricing and availability.",
-    inStock: true,
-    catalog: true,
-    featured: true
-  },
+
+// NEW SPARE PARTS
+{
+  id: "spare-parts-catalogue",
+  name: "Spare Parts Catalogue",
+  category: "spare-parts",
+  price: null,
+
+  image: "images/products/spare-parts-4.jpg",
+
+  images: [
+    "images/products/spare-parts-4.jpg",
+    "images/products/spare-parts-1.jpg",
+    "images/products/spare-parts-2.jpg"
+  ],
+
+  pdf: "doc/SPARE PARTS.pdf",
+
+  shortDescription: "Complete list of generator spare parts with pricing and availability.",
+
+  inStock: true,
+  catalog: true,
+  featured: true
+},
+
+{
+  id: "fuel-manager-limited-spare-parts-catalogue",
+
+  name: "Fuel Manager Limited Spare Parts Catalogue",
+
+  category: "spare-parts",
+
+  price: null,
+
+  image: "images/products/fmm1.jpg",
+
+  images: [
+    "images/products/fmm1.jpg",
+    "images/products/fmm2.jpg",
+    "images/products/fmm3.jpg",
+    "images/products/fmm4.jpg",
+    "images/products/fmm5.jpg",
+    "images/products/fmm6.jpg",
+    "images/products/fmm7.jpg",
+    "images/products/fmm8.jpg",
+    "images/products/fmm9.jpg"
+  ],
+
+  pdf: "doc/FUEL MANAGER.pdf",
+
+  shortDescription: "Complete list of generator spare parts with pricing and availability.",
+
+  inStock: true,
+  catalog: true,
+  featured: true
+},
   {
     id: "fuel-filter-perkins",
     name: "Perkins Fuel Filter (Set of 4)",
@@ -623,6 +663,10 @@ window.QF_PRODUCTS = [
   "shortDescription": "Genuine Powerpart secondary spin-on fuel filter element for Perkins 1100 series engines.",
   "inStock": true
 },
+
+
+
+
 
 {
   id: "shaft-seal-4225442",
