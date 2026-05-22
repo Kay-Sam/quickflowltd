@@ -135,7 +135,18 @@ QF.escape(S.address || "") +
 
 '</ul></div>'+
         '</div>'+
-        '<div class="footer-bottom"><span>© '+(new Date().getFullYear())+' '+QF.escape(S.legalName||S.name||"")+'. All rights reserved.</span><span>Power Solutions You Can Trust</span></div>'+
+      '<div class="footer-bottom">'+
+
+'<div class="footer-bottom-main">'+
+  '<span class="footer-copy">© '+(new Date().getFullYear())+' '+QF.escape(S.legalName||S.name||"")+'. All rights reserved.</span>'+
+  '<span class="footer-tagline">Power Solutions You Can Trust</span>'+
+'</div>'+
+
+  '<div class="footer-credit">'+
+    'Built by <a href="https://kaysotech.com.ng" target="_blank" rel="noopener">Kaysotech</a>'+
+  '</div>'+
+
+'</div>'+
       '</div></footer>';
     var slot = document.getElementById("qf-footer");
     if(slot) slot.outerHTML = html;

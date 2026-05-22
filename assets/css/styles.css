@@ -1717,3 +1717,17 @@ section {
   object-fit: contain;
 }
 
+.footer-bottom-main {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.footer-copy {
+  color: rgba(255,255,255,.75);
+}
+
+.footer-tagline {
+  color: rgba(255,255,255,.55);
+  font-size: .8rem;
+}
