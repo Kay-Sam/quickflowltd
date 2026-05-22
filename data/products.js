@@ -49,25 +49,25 @@ window.QF_PRODUCTS = [
     inStock: true
   },
   
-  {
-  id: "mtu-1000kva-new",
-  name: "MTU 1000KVA 2000 Series Diesel Generator",
-  brand: "MTU",
-  category: "brand-new",
-  price: 300000000,
-  kva: "1000 KVA",
-  fuel: "Diesel",
-  phase: "3-Phase",
-  image: "images/products/mtu-2000-3.webp",
-      images: [
-      "images/products/mtu-2000-1.webp",
-      "images/products/mtu-2000-2.png",
-      "images/products/mtu-2000-3.webp"
-    ],
-  shortDescription: "Heavy-duty MTU 2000 Series generator for industrial and mission-critical operations.",
-  inStock: true,
-  featured: true,
-},
+//   {
+//   id: "mtu-1000kva-new",
+//   name: "MTU 1000KVA 2000 Series Diesel Generator",
+//   brand: "MTU",
+//   category: "brand-new",
+//   price: 300000000,
+//   kva: "1000 KVA",
+//   fuel: "Diesel",
+//   phase: "3-Phase",
+//   image: "images/products/mtu-2000-3.webp",
+//       images: [
+//       "images/products/mtu-2000-1.webp",
+//       "images/products/mtu-2000-2.png",
+//       "images/products/mtu-2000-3.webp"
+//     ],
+//   shortDescription: "Heavy-duty MTU 2000 Series generator for industrial and mission-critical operations.",
+//   inStock: true,
+//   featured: true,
+// },
  {
   id: "caterpillar-2500kva-new",
   name: "Caterpillar 2500KVA Diesel Generator",
@@ -117,48 +117,48 @@ window.QF_PRODUCTS = [
 },
 
 
-{
-  id: "fgwilson-670kva",
-  name: "FG Wilson 670KVA 2800 Series Generator",
-  brand: "FG Wilson",
-  category: "fairly-used",
-  price: 38000000,
-  kva: "670 KVA",
-  fuel: "Diesel",
-  phase: "3-Phase",
-  image: "images/products/fg-8.jpeg",
-          images: [
-      "images/products/fg-8.jpeg",
-      "images/products/fg-7.jpeg",
-      "images/products/FG-670KVA-2.jpeg",
-      "images/products/FG-670KVA-3.jpeg",
-      "images/products/fg-6.jpeg",
-      "images/products/fg-5.jpeg",
-      "images/products/fg-1.jpeg"
-    ],
-  shortDescription: "FG Wilson 2800 Series industrial generator in excellent working condition.",
-  featured: true,
-  inStock: true
-},
-{
-  id: "670kva marapco 2800series",
-  name: "670kva marapco 2800series Generator",
-  brand: "FG Wilson",
-  category: "fairly-used",
-  price: 37000000,
-  kva: "670 KVA",
-  fuel: "Diesel",
-  phase: "3-Phase",
-  image: "images/products/670kva-2.jpeg",
-          images: [
-      "images/products/670kva-2.jpeg",
-      "images/products/670kva-1.jpeg",
-      "images/products/670kva-3.jpeg"
-    ],
-  shortDescription: "FG Wilson 2800 Series industrial generator in excellent working condition.",
-  featured: true,
-  inStock: true
-},
+// {
+//   id: "fgwilson-670kva",
+//   name: "FG Wilson 670KVA 2800 Series Generator",
+//   brand: "FG Wilson",
+//   category: "fairly-used",
+//   price: 38000000,
+//   kva: "670 KVA",
+//   fuel: "Diesel",
+//   phase: "3-Phase",
+//   image: "images/products/fg-8.jpeg",
+//           images: [
+//       "images/products/fg-8.jpeg",
+//       "images/products/fg-7.jpeg",
+//       "images/products/FG-670KVA-2.jpeg",
+//       "images/products/FG-670KVA-3.jpeg",
+//       "images/products/fg-6.jpeg",
+//       "images/products/fg-5.jpeg",
+//       "images/products/fg-1.jpeg"
+//     ],
+//   shortDescription: "FG Wilson 2800 Series industrial generator in excellent working condition.",
+//   featured: true,
+//   inStock: true
+// },
+// {
+//   id: "670kva marapco 2800series",
+//   name: "670kva marapco 2800series Generator",
+//   brand: "FG Wilson",
+//   category: "fairly-used",
+//   price: 37000000,
+//   kva: "670 KVA",
+//   fuel: "Diesel",
+//   phase: "3-Phase",
+//   image: "images/products/670kva-2.jpeg",
+//           images: [
+//       "images/products/670kva-2.jpeg",
+//       "images/products/670kva-1.jpeg",
+//       "images/products/670kva-3.jpeg"
+//     ],
+//   shortDescription: "FG Wilson 2800 Series industrial generator in excellent working condition.",
+//   featured: true,
+//   inStock: true
+// },
 {
   "id": "mikano-sp-60",
   "name": "Mikano SP-60 Soundproof Diesel Generator",
