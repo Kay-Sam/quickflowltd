@@ -49,25 +49,28 @@ window.QF_PRODUCTS = [
     inStock: true
   },
   
-//   {
-//   id: "mtu-1000kva-new",
-//   name: "MTU 1000KVA 2000 Series Diesel Generator",
-//   brand: "MTU",
-//   category: "brand-new",
-//   price: 300000000,
-//   kva: "1000 KVA",
-//   fuel: "Diesel",
-//   phase: "3-Phase",
-//   image: "images/products/mtu-2000-3.webp",
-//       images: [
-//       "images/products/mtu-2000-1.webp",
-//       "images/products/mtu-2000-2.png",
-//       "images/products/mtu-2000-3.webp"
-//     ],
-//   shortDescription: "Heavy-duty MTU 2000 Series generator for industrial and mission-critical operations.",
-//   inStock: true,
-//   featured: true,
-// },
+  {
+  id: "mtu-1000kva-new",
+  name: "MTU 1000KVA 2000 Series Diesel Generator",
+  brand: "MTU",
+  category: "brand-new",
+  price: 300000000,
+  kva: "1000 KVA",
+  fuel: "Diesel",
+  phase: "3-Phase",
+  image: "images/products/m-1.jpg",
+      images: [
+      "images/products/m-1.jpg",
+      "images/products/m-2.jpg",
+      "images/products/m-3.jpg",
+      "images/products/m-4.jpg",
+      "images/products/m-5.jpg",
+      "images/products/m-6.jpg"
+    ],
+  shortDescription: "Heavy-duty MTU 2000 Series generator for industrial and mission-critical operations.",
+  inStock: true,
+  featured: true,
+},
  {
   id: "caterpillar-2500kva-new",
   name: "Caterpillar 2500KVA Diesel Generator",
