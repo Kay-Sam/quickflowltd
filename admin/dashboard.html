@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quickflow Admin</title>
+<link rel="stylesheet" href="admin/admin.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div>
+      <span class="brand-kicker">Admin</span>
+      <h1>Quickflow</h1>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <a class="active" href="#">Products</a>
+    <a href="../index.html" target="_blank" rel="noopener">View Website</a>
+    <button id="logoutBtn" class="nav-button">Logout</button>
+  </nav>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <i id="menuIcon" class="fa-solid fa-bars" aria-hidden="true"></i>
+    </button>
+
+    <div>
+      <span class="page-kicker">Catalogue</span>
+      <h2>Product Management</h2>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle theme">
+        <i id="themeIcon" class="fa-solid fa-moon" aria-hidden="true"></i>
+      </button>
+      <button class="btn primary" id="addBtn">Add Product</button>
+    </div>
+  </header>
+
+  <section class="stats-grid">
+    <button class="stat-card active" type="button" data-stat-filter="all">
+      <span>Total Products</span>
+      <strong id="statTotal">0</strong>
+      <small>Show full catalogue</small>
+    </button>
+    <button class="stat-card" type="button" data-stat-filter="featured">
+      <span>Featured</span>
+      <strong id="statFeatured">0</strong>
+      <small>Show homepage picks</small>
+    </button>
+    <button class="stat-card" type="button" data-stat-filter="stock">
+      <span>In Stock</span>
+      <strong id="statStock">0</strong>
+      <small>Show available items</small>
+    </button>
+  </section>
+
+  <section class="analytics-grid">
+    <div class="panel analytics-panel">
+      <div class="panel-title-row">
+        <div>
+          <h3>Category Mix</h3>
+          <p>Products grouped by catalogue category.</p>
+        </div>
+      </div>
+      <div class="donut-layout">
+        <div class="donut-chart" id="categoryDonut">
+          <span id="categoryDonutTotal">0</span>
+          <small>Products</small>
+        </div>
+        <div class="chart-legend" id="categoryChart"></div>
+      </div>
+    </div>
+
+    <div class="panel analytics-panel">
+      <div class="panel-title-row">
+        <div>
+          <h3>Availability</h3>
+          <p>Stock and homepage visibility.</p>
+        </div>
+      </div>
+      <div class="mini-metrics" id="availabilityMetrics"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>Products</h3>
+        <p><span id="resultText">Loading products...</span><button class="link-button" id="clearFilters" type="button">Clear filters</button></p>
+      </div>
+
+      <div class="toolbar">
+        <input id="searchInput" type="search" placeholder="Search products">
+        <select id="filterCategory">
+          <option value="all">All Categories</option>
+          <option value="brand-new">Brand New</option>
+          <option value="fairly-used">Fairly Used</option>
+          <option value="gas">Gas Generators</option>
+          <option value="spare-parts">Spare Parts</option>
+          <option value="industrial">Industrial Power</option>
+          <option value="others">Others</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid" id="grid">
+      <div class="loading">Loading products...</div>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <form class="modal-content" id="productForm">
+    <button type="button" class="modal-close" id="modalClose" aria-label="Close">x</button>
+
+    <div class="modal-head">
+      <span class="page-kicker">Product</span>
+      <h2 id="modalTitle">Add Product</h2>
+    </div>
+
+    <div class="form-grid">
+      <label>
+        Product Name
+        <input id="name" required placeholder="Perkins 100KVA Soundproof Diesel Generator">
+      </label>
+
+      <label>
+        Brand
+        <input id="brand" placeholder="Perkins">
+      </label>
+
+      <label>
+        Price
+        <input id="price" type="number" min="0" placeholder="24000000">
+      </label>
+
+      <label>
+        Category
+        <select id="category" required>
+          <option value="">Select Category</option>
+          <option value="brand-new">Brand New</option>
+          <option value="fairly-used">Fairly Used</option>
+          <option value="gas">Gas Generators</option>
+          <option value="spare-parts">Spare Parts</option>
+          <option value="industrial">Industrial Power</option>
+          <option value="others">Others</option>
+        </select>
+      </label>
+
+      <label>
+        KVA
+        <input id="kva" placeholder="100 KVA">
+      </label>
+
+      <label>
+        Fuel
+        <input id="fuel" placeholder="Diesel">
+      </label>
+
+      <label>
+        Phase
+        <input id="phase" placeholder="3-Phase">
+      </label>
+
+      <label>
+        Product Image
+        <span class="field-help">Upload a new image. It will be added to Gallery Images immediately.</span>
+        <input type="file" id="image" accept="image/*">
+      </label>
+    </div>
+
+    <label>
+      Gallery Images
+      <span class="field-help">One image URL/path per line. The first image becomes the main product image.</span>
+      <textarea id="galleryImages" rows="4" placeholder="One image URL/path per line"></textarea>
+    </label>
+
+    <div class="preview-row">
+      <div id="previewGallery" class="preview-gallery"></div>
+      <div>
+        <strong>Media preview</strong>
+        <p>Main image upload and gallery paths are both shown here.</p>
+      </div>
+    </div>
+
+    <label>
+      Short Description
+      <span class="field-help">Used on product cards and search results.</span>
+      <textarea id="shortDescription" rows="2" placeholder="Short text shown on product cards"></textarea>
+    </label>
+
+    <label>
+      Full Description
+      <span class="field-help">Used on the product detail page under the price.</span>
+      <textarea id="desc" rows="4" placeholder="Full product description"></textarea>
+    </label>
+
+    <label>
+      Specs
+      <textarea id="specs" rows="5" placeholder="Engine: Perkins 1104A-44TG2&#10;Alternator: Stamford&#10;Sound Level: 75 dB @ 7m"></textarea>
+    </label>
+
+    <div class="switch-row">
+      <label class="checkbox">
+        <input type="checkbox" id="in_stock" checked>
+        In Stock
+      </label>
+
+      <label class="checkbox">
+        <input type="checkbox" id="featured">
+        Featured
+      </label>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn secondary" id="closeBtn">Cancel</button>
+      <button type="submit" class="btn primary" id="saveBtn">Save Product</button>
+    </div>
+  </form>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="admin/script.js"></script>
+</body>
+</html>

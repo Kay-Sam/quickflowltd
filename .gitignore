@@ -1,0 +1,10 @@
+.vscode/
+__pycache__/
+.env
+venv/
+node_modules/
+.env
+dist/
+build/
+.DS_Store
+npm-debug.log*

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Quickflow</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="admin/login.css">
+</head>
+<body>
+  <main class="login-shell">
+    <div class="brand">
+      <div>
+        <h1>Quickflow Ltd Admin</h1>
+      </div>
+    </div>
+
+    <section class="login-card">
+
+      <div class="card-head">
+        <h2>Sign In</h2>
+        <p>Use your authorized admin account to manage products, images, prices, and availability.</p>
+      </div>
+
+      <form id="login-form">
+        <div class="field">
+          <label for="email">Email Address</label>
+          <div class="input-wrap">
+            <i class="field-icon fa-solid fa-envelope" aria-hidden="true"></i>
+            <input type="email" id="email" placeholder="admin@example.com" autocomplete="email" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <i class="field-icon fa-solid fa-key" aria-hidden="true"></i>
+            <input type="password" id="password" placeholder="Enter password" autocomplete="current-password" required>
+            <button type="button" class="password-toggle" id="password-toggle" aria-label="Show password">
+              <i class="fa-solid fa-eye" id="password-toggle-icon" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <button class="login-btn" id="login-btn" type="submit">
+          <span>Login to Dashboard</span>
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </button>
+      </form>
+
+      <div class="message error-box" id="error-box"></div>
+      <div class="message success-box" id="success-box"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="admin/login.js"></script>
+</body>
+</html>
