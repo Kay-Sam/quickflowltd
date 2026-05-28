@@ -444,8 +444,10 @@ document.addEventListener("DOMContentLoaded", () => {
     els.grid.innerHTML = '<div class="loading">Loading products...</div>';
 
     const { data, error } = await supabaseClient
-      .from("products")
-      .select("*");
+  .from("products")
+  .select("*")
+  .order("category", { ascending: true })
+  .order("updated_at", { ascending: false });
 
     if (error) {
       els.grid.innerHTML = '<div class="empty-state">Could not load products.</div>';
