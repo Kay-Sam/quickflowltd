@@ -1,5 +1,3 @@
-import { FFmpeg } from "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js";
-
 document.addEventListener("DOMContentLoaded", () => {
   const supabaseClient = window.supabase.createClient(
     "https://ubrqudheimrkpkmnfvbq.supabase.co",
@@ -630,9 +628,13 @@ products.sort((a, b) => {
     if (ffmpegInstance) return ffmpegInstance;
 
     if (!ffmpegLoadPromise) {
-      ffmpegInstance = new FFmpeg();
+      if (!window.FFmpegWASM || !window.FFmpegWASM.FFmpeg) {
+        throw new Error("Video compression tool failed to load.");
+      }
+
+      ffmpegInstance = new window.FFmpegWASM.FFmpeg();
       ffmpegLoadPromise = (async () => {
-        const baseURL = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd";
+        const baseURL = "../assets/js";
         await ffmpegInstance.load({
           coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
           wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
