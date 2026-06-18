@@ -174,8 +174,8 @@
 
       <label>
         Product Image
-        <span class="field-help">Upload a new image. It will be added to Gallery Images immediately.</span>
-        <input type="file" id="image" accept="image/*">
+        <span class="field-help">Upload an image or video. Images and videos are compressed before upload.</span>
+        <input type="file" id="image" accept="image/*,video/*">
       </label>
     </div>
 
@@ -232,6 +232,7 @@
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.10.1/dist/ffmpeg.min.js"></script>
 <script src="admin/script.js"></script>
 </body>
 </html>

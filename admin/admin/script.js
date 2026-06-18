@@ -53,7 +53,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let editingId = null;
   let toastTimer = null;
   let statFilter = "all";
-  let selectedUploadPreview = "";
+  let selectedUploadPreview = null;
+  let ffmpegLoadPromise = null;
+  let ffmpegInstance = null;
 
   function escapeHTML(value) {
     return String(value == null ? "" : value).replace(/[&<>"']/g, char => ({
@@ -93,8 +95,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function normalizeMediaItem(item) {
     if (!item) return null;
-    if (typeof item === "string") return item;
-    if (item.type === "image" && item.src) return item.src;
+    if (typeof item === "string") {
+      if (item.includes("|")) {
+        const parts = item.split("|");
+        const type = parts[0] === "video" ? "video" : "image";
+        const src = parts.slice(1).join("|").trim();
+        if (!src || src === "undefined" || src === "null") return null;
+        return { type, src };
+      }
+
+      if (!item.trim() || item === "undefined" || item === "null") return null;
+      return { type: "image", src: item };
+    }
+    if (item.type === "image" && item.src) return { type: "image", src: item.src };
+    if (item.type === "video" && item.src) return { type: "video", src: item.src };
     return null;
   }
 
@@ -112,22 +126,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function productImageList(product) {
-    const urls = [];
+    const items = [];
     const images = normalizeArray(product.images);
     const media = normalizeArray(product.media);
 
     images.forEach(src => {
-      if (src) urls.push(src);
+      if (src && src !== "undefined" && src !== "null") {
+        items.push({ type: "image", src });
+      }
     });
 
     media.forEach(item => {
-      const src = normalizeMediaItem(item);
-      if (src) urls.push(src);
+      const normalized = normalizeMediaItem(item);
+      if (normalized) items.push(normalized);
     });
 
-    if (product.image) urls.unshift(product.image);
+    if (product.image && product.image !== "undefined" && product.image !== "null") {
+      items.unshift({ type: "image", src: product.image });
+    }
 
-    return [...new Set(urls.filter(Boolean))];
+    return items.reduce((acc, item) => {
+      const key = item.type + "|" + item.src;
+      if (!acc.some(existing => existing.type + "|" + existing.src === key)) acc.push(item);
+      return acc;
+    }, []);
   }
 
   function formatPrice(value) {
@@ -213,23 +235,64 @@ document.addEventListener("DOMContentLoaded", () => {
     return value
       .split(/\n+/)
       .map(line => line.trim())
-      .filter(Boolean);
+      .filter(Boolean)
+      .map(function (line) {
+        if (line.startsWith("video|")) {
+          const src = line.slice(6).trim();
+          return src && src !== "undefined" && src !== "null" ? { type: "video", src } : null;
+        }
+        if (line.startsWith("image|")) {
+          const src = line.slice(6).trim();
+          return src && src !== "undefined" && src !== "null" ? { type: "image", src } : null;
+        }
+        if (line.includes("|")) {
+          const parts = line.split("|");
+          const type = parts[0] === "video" ? "video" : "image";
+          const src = parts.slice(1).join("|").trim();
+          return src && src !== "undefined" && src !== "null" ? { type, src } : null;
+        }
+        return { type: "image", src: line };
+      })
+      .filter(function (item) {
+        return item && item.src && item.src !== "undefined" && item.src !== "null";
+      });
   }
 
-  function renderPreview(urls) {
-    const cleanUrls = [...new Set(urls.filter(Boolean))];
+  function sanitizeGalleryItems(items) {
+    return (items || []).map(normalizeMediaItem).filter(Boolean);
+  }
 
-    if (!cleanUrls.length) {
+  function serializeGallery(items) {
+    return sanitizeGalleryItems(items)
+      .map(function (item) {
+        return (item.type === "video" ? "video|" : "image|") + item.src;
+      })
+      .join("\n");
+  }
+
+  function renderPreview(items) {
+    const cleanItems = sanitizeGalleryItems(items).reduce((acc, item) => {
+      const key = item.type + "|" + item.src;
+      if (!acc.some(existing => existing.type + "|" + existing.src === key)) acc.push(item);
+      return acc;
+    }, []);
+
+    if (!cleanItems.length) {
       els.previewGallery.innerHTML = '<span class="preview-empty">No media selected</span>';
       return;
     }
 
-    els.previewGallery.innerHTML = cleanUrls.map((src, index) => {
-      const isUpload = src.startsWith("data:");
+    els.previewGallery.innerHTML = cleanItems.map((item, index) => {
+      const isUpload = item.src.startsWith("data:");
+      const previewSrc = adminImageUrl(item.src);
       return `
         <div class="preview-item">
-          <img src="${escapeHTML(adminImageUrl(src))}" alt="Product media preview">
-          <button type="button" class="preview-remove" data-preview-src="${escapeHTML(src)}" aria-label="Remove image">x</button>
+          ${
+            item.type === "video"
+              ? `<video src="${escapeHTML(previewSrc)}" controls playsinline muted></video>`
+              : `<img src="${escapeHTML(previewSrc)}" alt="Product media preview">`
+          }
+          <button type="button" class="preview-remove" data-preview-key="${escapeHTML(item.type + "|" + item.src)}" aria-label="Remove media">x</button>
           ${index === 0 ? '<span class="preview-main">Main</span>' : ""}
           ${isUpload ? '<span class="preview-new">New</span>' : ""}
         </div>
@@ -238,25 +301,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function currentPreviewSources() {
-    return (selectedUploadPreview ? [selectedUploadPreview] : []).concat(parseGallery(els.galleryImages.value));
+    return sanitizeGalleryItems((selectedUploadPreview ? [selectedUploadPreview] : []).concat(parseGallery(els.galleryImages.value)));
   }
 
-  function removeGallerySource(src) {
-    if (src.startsWith("data:")) {
-      selectedUploadPreview = "";
+  function removeGallerySource(key) {
+    if (key.startsWith("image|data:") || key.startsWith("video|data:")) {
+      selectedUploadPreview = null;
       els.image.value = "";
       renderPreview(currentPreviewSources());
       return;
     }
 
-    const remaining = parseGallery(els.galleryImages.value).filter(item => item !== src);
-    els.galleryImages.value = remaining.join("\n");
+    const remaining = sanitizeGalleryItems(parseGallery(els.galleryImages.value)).filter(function (item) {
+      return item.type + "|" + item.src !== key;
+    });
+    els.galleryImages.value = serializeGallery(remaining);
     renderPreview(currentPreviewSources());
   }
 
   function resetForm() {
     editingId = null;
-    selectedUploadPreview = "";
+    selectedUploadPreview = null;
     els.form.reset();
     els.inStock.checked = true;
     els.featured.checked = false;
@@ -281,7 +346,7 @@ document.addEventListener("DOMContentLoaded", () => {
       els.shortDescription.value = product.shortDescription || product.short_description || "";
       els.desc.value = product.description || "";
       els.specs.value = stringifySpecs(product.specs);
-      els.galleryImages.value = productImageList(product).join("\n");
+      els.galleryImages.value = serializeGallery(productImageList(product));
       els.inStock.checked = product.in_stock ?? product.inStock ?? true;
       els.featured.checked = product.featured ?? false;
       renderPreview(currentPreviewSources());
@@ -549,13 +614,90 @@ products.sort((a, b) => {
   });
 }
 
-  async function uploadImageFile(file) {
+  async function getFFmpeg() {
+    if (ffmpegInstance) return ffmpegInstance;
+
+    if (!window.FFmpeg || typeof window.FFmpeg.createFFmpeg !== "function" || typeof window.FFmpeg.fetchFile !== "function") {
+      throw new Error("Video compression tool failed to load.");
+    }
+
+    if (!ffmpegLoadPromise) {
+      ffmpegInstance = window.FFmpeg.createFFmpeg({ log: false });
+      ffmpegLoadPromise = ffmpegInstance.load().then(() => ffmpegInstance);
+    }
+
+    return ffmpegLoadPromise;
+  }
+
+  async function compressVideo(file, options = {}) {
+    const {
+      maxWidth = 1280,
+      crf = 28,
+      audioBitrate = "96k",
+    } = options;
+
+    const ffmpeg = await getFFmpeg();
+    const { fetchFile } = window.FFmpeg;
+    const inputExt = (file.name.split(".").pop() || "mp4").toLowerCase();
+    const inputName = `input-${Date.now()}.${inputExt}`;
+    const outputName = `output-${Date.now()}.mp4`;
+
+    try {
+      ffmpeg.FS("writeFile", inputName, await fetchFile(file));
+
+      await ffmpeg.run(
+        "-i", inputName,
+        "-vf", `scale='min(${maxWidth},iw)':-2`,
+        "-c:v", "libx264",
+        "-preset", "veryfast",
+        "-crf", String(crf),
+        "-c:a", "aac",
+        "-b:a", audioBitrate,
+        "-movflags", "+faststart",
+        outputName
+      );
+
+      const data = ffmpeg.FS("readFile", outputName);
+      const blob = new Blob([data], { type: "video/mp4" });
+
+      return new File(
+        [blob],
+        file.name.replace(/\.[^.]+$/, ".mp4"),
+        {
+          type: "video/mp4",
+          lastModified: Date.now(),
+        }
+      );
+    } finally {
+      try {
+        ffmpeg.FS("unlink", inputName);
+      } catch (err) {
+        // ignore cleanup failures
+      }
+      try {
+        ffmpeg.FS("unlink", outputName);
+      } catch (err) {
+        // ignore cleanup failures
+      }
+    }
+  }
+
+  async function uploadMediaFile(file) {
     const safeName = file.name.replace(/[^a-z0-9._-]/gi, "-").toLowerCase();
-    const fileName = `${Date.now()}-${safeName}`;
+    const baseName = safeName.replace(/\.[^.]+$/, "");
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+    const ext = isImage ? "webp" : (isVideo ? "mp4" : (safeName.split(".").pop() || "bin"));
+    const fileName = `${Date.now()}-${baseName}.${ext}`;
+    const payload = isImage
+      ? await compressImage(file)
+      : isVideo
+        ? await compressVideo(file)
+        : file;
 
     const { error } = await supabaseClient.storage
       .from("products")
-      .upload(fileName, file);
+      .upload(fileName, payload);
 
     if (error) throw error;
 
@@ -569,25 +711,16 @@ products.sort((a, b) => {
   async function uploadImageIfNeeded(existingImage) {
     const file = els.image.files[0];
     if (!file) return existingImage || "";
-   const compressed = await compressImage(file);
-
-console.log(
-  "Original:",
-  (file.size / 1024 / 1024).toFixed(2) + "MB"
-);
-
-console.log(
-  "Compressed:",
-  (compressed.size / 1024 / 1024).toFixed(2) + "MB"
-);
-
-return uploadImageFile(compressed);
+    return uploadMediaFile(file);
   }
 
-  function appendGalleryImage(src) {
-    const gallery = parseGallery(els.galleryImages.value);
-    if (!gallery.includes(src)) gallery.push(src);
-    els.galleryImages.value = gallery.join("\n");
+  function appendGalleryImage(item) {
+    const gallery = sanitizeGalleryItems(parseGallery(els.galleryImages.value));
+    const key = item.type + "|" + item.src;
+    if (!gallery.some(function (entry) {
+      return entry.type + "|" + entry.src === key;
+    })) gallery.push(item);
+    els.galleryImages.value = serializeGallery(gallery);
     renderPreview(currentPreviewSources());
   }
 
@@ -596,13 +729,30 @@ return uploadImageFile(compressed);
 
     try {
       const existing = editingId ? products.find(product => product.id === editingId) : null;
-      const gallery = parseGallery(els.galleryImages.value);
-      const imageUrl = await uploadImageIfNeeded((existing && existing.image) || gallery[0]);
-      const images = [...new Set([imageUrl].concat(gallery).filter(Boolean))];
+      const gallery = sanitizeGalleryItems(parseGallery(els.galleryImages.value));
+      const imageUrl = await uploadImageIfNeeded((existing && existing.image) || ((gallery.find(function (item) {
+        return item.type === "image";
+      }) || {}).src));
+      const images = gallery
+        .filter(function (item) {
+          return item.type === "image";
+        })
+        .map(function (item) {
+          return item.src;
+        });
       const existingMedia = existing ? normalizeArray(existing.media) : [];
       const existingVideos = existingMedia.length
         ? existingMedia.filter(item => item && item.type === "video" && item.src)
         : [];
+      const mediaEntries = gallery.map(function (item) {
+        return { type: item.type, src: item.src };
+      });
+
+      if (imageUrl && !images.length) {
+        images.unshift(imageUrl);
+      }
+
+      const mainImage = images[0] || (existing && existing.image) || "";
 
       const productData = {
         name: els.name.value.trim(),
@@ -615,9 +765,9 @@ return uploadImageFile(compressed);
         short_description: els.shortDescription.value.trim(),
         description: els.desc.value.trim(),
         specs: parseSpecs(els.specs.value),
-        image: imageUrl,
+        image: mainImage,
         images,
-        media: images.map(src => ({ type: "image", src })).concat(existingVideos),
+        media: mediaEntries.concat(existingVideos),
         in_stock: els.inStock.checked,
         featured: els.featured.checked,
       };
@@ -701,34 +851,25 @@ return uploadImageFile(compressed);
     const file = els.image.files[0];
     if (!file) return;
 
+    const kind = file.type.startsWith("video/") ? "video" : "image";
+
     const reader = new FileReader();
     reader.onload = event => {
-      selectedUploadPreview = event.target.result;
+      selectedUploadPreview = { type: kind, src: event.target.result };
       renderPreview(currentPreviewSources());
     };
     reader.readAsDataURL(file);
 
     try {
       els.image.disabled = true;
-      showToast("Uploading image...");
-      showToast("Compressing image...");
-
-const compressed = await compressImage(file);
-
-console.log(
-  "Compressed upload:",
-  (compressed.size / 1024 / 1024).toFixed(2) + "MB"
-);
-
-showToast("Uploading optimized image...");
-
-const publicUrl = await uploadImageFile(compressed);
-      selectedUploadPreview = "";
+      showToast(kind === "video" ? "Uploading video..." : "Uploading image...");
+      const publicUrl = await uploadMediaFile(file);
+      selectedUploadPreview = null;
       els.image.value = "";
-      appendGalleryImage(publicUrl);
-      showToast("Image added to gallery.");
+      appendGalleryImage({ type: kind, src: publicUrl });
+      showToast(kind === "video" ? "Video added to gallery." : "Image added to gallery.");
     } catch (err) {
-      showToast(err.message || "Image upload failed.", "error");
+      showToast(err.message || "Upload failed.", "error");
     } finally {
       els.image.disabled = false;
     }
@@ -741,7 +882,7 @@ const publicUrl = await uploadImageFile(compressed);
   els.previewGallery.addEventListener("click", event => {
     const button = event.target.closest(".preview-remove");
     if (!button) return;
-    removeGallerySource(button.dataset.previewSrc);
+    removeGallerySource(button.dataset.previewKey);
   });
 
   els.grid.addEventListener("click", event => {

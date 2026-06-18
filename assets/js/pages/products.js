@@ -68,7 +68,7 @@
       var b = e.target.closest(".chip"); if(!b) return;
 
       state.cat = b.dataset.cat;
-
+   
       var u = new URL(location.href);
       if(state.cat==="all") u.searchParams.delete("cat");
       else u.searchParams.set("cat", state.cat);
