@@ -1,3 +1,5 @@
+import { FFmpeg } from "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const supabaseClient = window.supabase.createClient(
     "https://ubrqudheimrkpkmnfvbq.supabase.co",
@@ -614,16 +616,33 @@ products.sort((a, b) => {
   });
 }
 
+  async function toBlobURL(url, mimeType) {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to load ${url}`);
+    }
+
+    const buffer = await response.arrayBuffer();
+    return URL.createObjectURL(new Blob([buffer], { type: mimeType }));
+  }
+
   async function getFFmpeg() {
     if (ffmpegInstance) return ffmpegInstance;
 
-    if (!window.FFmpeg || typeof window.FFmpeg.createFFmpeg !== "function" || typeof window.FFmpeg.fetchFile !== "function") {
-      throw new Error("Video compression tool failed to load.");
-    }
-
     if (!ffmpegLoadPromise) {
-      ffmpegInstance = window.FFmpeg.createFFmpeg({ log: false });
-      ffmpegLoadPromise = ffmpegInstance.load().then(() => ffmpegInstance);
+      ffmpegInstance = new FFmpeg();
+      ffmpegLoadPromise = (async () => {
+        const baseURL = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd";
+        await ffmpegInstance.load({
+          coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
+          wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
+        });
+        return ffmpegInstance;
+      })().catch(err => {
+        ffmpegInstance = null;
+        ffmpegLoadPromise = null;
+        throw err;
+      });
     }
 
     return ffmpegLoadPromise;
@@ -637,15 +656,14 @@ products.sort((a, b) => {
     } = options;
 
     const ffmpeg = await getFFmpeg();
-    const { fetchFile } = window.FFmpeg;
     const inputExt = (file.name.split(".").pop() || "mp4").toLowerCase();
     const inputName = `input-${Date.now()}.${inputExt}`;
     const outputName = `output-${Date.now()}.mp4`;
 
     try {
-      ffmpeg.FS("writeFile", inputName, await fetchFile(file));
+      await ffmpeg.writeFile(inputName, new Uint8Array(await file.arrayBuffer()));
 
-      await ffmpeg.run(
+      await ffmpeg.exec([
         "-i", inputName,
         "-vf", `scale='min(${maxWidth},iw)':-2`,
         "-c:v", "libx264",
@@ -654,10 +672,10 @@ products.sort((a, b) => {
         "-c:a", "aac",
         "-b:a", audioBitrate,
         "-movflags", "+faststart",
-        outputName
-      );
+        outputName,
+      ]);
 
-      const data = ffmpeg.FS("readFile", outputName);
+      const data = await ffmpeg.readFile(outputName);
       const blob = new Blob([data], { type: "video/mp4" });
 
       return new File(
@@ -670,12 +688,12 @@ products.sort((a, b) => {
       );
     } finally {
       try {
-        ffmpeg.FS("unlink", inputName);
+        await ffmpeg.deleteFile(inputName);
       } catch (err) {
         // ignore cleanup failures
       }
       try {
-        ffmpeg.FS("unlink", outputName);
+        await ffmpeg.deleteFile(outputName);
       } catch (err) {
         // ignore cleanup failures
       }
