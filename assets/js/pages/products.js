@@ -2,7 +2,7 @@
   var state = {
     cat: QF.qs("cat") || "all",
     q: "",
-    sort: "featured"
+    sort: "newest"
   };
 
   async function initProducts() {
@@ -15,6 +15,12 @@
 
   function render(){
     var pool = (window.QF_PRODUCTS||[]).slice();
+
+    function recentFirst(a, b) {
+      var aTime = new Date(a.updated_at || a.created_at || 0).getTime();
+      var bTime = new Date(b.updated_at || b.created_at || 0).getTime();
+      return bTime - aTime;
+    }
 
     if (state.cat !== "all") {
       pool = pool.filter(function(p){
@@ -31,6 +37,9 @@
       });
     }
 
+    if(state.sort==="newest")
+      pool.sort(recentFirst);
+
     if(state.sort==="price-asc")
       pool.sort((a,b)=>(a.price||0)-(b.price||0));
 
@@ -38,7 +47,11 @@
       pool.sort((a,b)=>(b.price||0)-(a.price||0));
 
     if(state.sort==="featured")
-      pool.sort((a,b)=>(b.featured?1:0)-(a.featured?1:0));
+      pool.sort((a,b)=>{
+        var featuredDelta = (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+        if (featuredDelta) return featuredDelta;
+        return recentFirst(a, b);
+      });
 
     var grid = QF.byId("products-grid");
 

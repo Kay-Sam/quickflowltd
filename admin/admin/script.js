@@ -54,8 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let toastTimer = null;
   let statFilter = "all";
   let selectedUploadPreview = null;
-  let ffmpegLoadPromise = null;
-  let ffmpegInstance = null;
 
   function escapeHTML(value) {
     return String(value == null ? "" : value).replace(/[&<>"']/g, char => ({
@@ -292,6 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
               ? `<video src="${escapeHTML(previewSrc)}" controls playsinline muted></video>`
               : `<img src="${escapeHTML(previewSrc)}" alt="Product media preview">`
           }
+          ${index > 0 ? `<button type="button" class="preview-main-btn" data-preview-action="make-main" data-preview-key="${escapeHTML(item.type + "|" + item.src)}" aria-label="Make this the main image"><i class="fa-solid fa-star" aria-hidden="true"></i></button>` : ""}
           <button type="button" class="preview-remove" data-preview-key="${escapeHTML(item.type + "|" + item.src)}" aria-label="Remove media">x</button>
           ${index === 0 ? '<span class="preview-main">Main</span>' : ""}
           ${isUpload ? '<span class="preview-new">New</span>' : ""}
@@ -316,6 +315,20 @@ document.addEventListener("DOMContentLoaded", () => {
       return item.type + "|" + item.src !== key;
     });
     els.galleryImages.value = serializeGallery(remaining);
+    renderPreview(currentPreviewSources());
+  }
+
+  function setPrimaryGallerySource(key) {
+    const gallery = sanitizeGalleryItems(parseGallery(els.galleryImages.value));
+    const index = gallery.findIndex(function (item) {
+      return item.type + "|" + item.src === key;
+    });
+
+    if (index <= 0) return;
+
+    const [picked] = gallery.splice(index, 1);
+    gallery.unshift(picked);
+    els.galleryImages.value = serializeGallery(gallery);
     renderPreview(currentPreviewSources());
   }
 
@@ -614,91 +627,13 @@ products.sort((a, b) => {
   });
 }
 
-  async function getFFmpeg() {
-    if (ffmpegInstance) return ffmpegInstance;
-
-    if (!ffmpegLoadPromise) {
-      if (!window.FFmpegWASM || !window.FFmpegWASM.FFmpeg) {
-        throw new Error("Video compression tool failed to load.");
-      }
-
-      ffmpegInstance = new window.FFmpegWASM.FFmpeg();
-      ffmpegLoadPromise = (async () => {
-        const coreURL = new URL("../assets/js/ffmpeg-core.js", window.location.href).href;
-        const wasmURL = new URL("../assets/js/ffmpeg-core.wasm", window.location.href).href;
-        await ffmpegInstance.load({
-          coreURL,
-          wasmURL,
-        });
-        return ffmpegInstance;
-      })().catch(err => {
-        ffmpegInstance = null;
-        ffmpegLoadPromise = null;
-        throw err;
-      });
-    }
-
-    return ffmpegLoadPromise;
-  }
-
-  async function compressVideo(file, options = {}) {
-    const {
-      maxWidth = 1280,
-      crf = 28,
-      audioBitrate = "96k",
-    } = options;
-
-    const ffmpeg = await getFFmpeg();
-    const inputExt = (file.name.split(".").pop() || "mp4").toLowerCase();
-    const inputName = `input-${Date.now()}.${inputExt}`;
-    const outputName = `output-${Date.now()}.mp4`;
-
-    try {
-      await ffmpeg.writeFile(inputName, new Uint8Array(await file.arrayBuffer()));
-
-      await ffmpeg.exec([
-        "-i", inputName,
-        "-vf", `scale='min(${maxWidth},iw)':-2`,
-        "-c:v", "libx264",
-        "-preset", "veryfast",
-        "-crf", String(crf),
-        "-c:a", "aac",
-        "-b:a", audioBitrate,
-        "-movflags", "+faststart",
-        outputName,
-      ]);
-
-      const data = await ffmpeg.readFile(outputName);
-      const blob = new Blob([data], { type: "video/mp4" });
-
-      return new File(
-        [blob],
-        file.name.replace(/\.[^.]+$/, ".mp4"),
-        {
-          type: "video/mp4",
-          lastModified: Date.now(),
-        }
-      );
-    } finally {
-      try {
-        await ffmpeg.deleteFile(inputName);
-      } catch (err) {
-        // ignore cleanup failures
-      }
-      try {
-        await ffmpeg.deleteFile(outputName);
-      } catch (err) {
-        // ignore cleanup failures
-      }
-    }
-  }
-
   async function uploadMediaFile(file) {
     const safeName = file.name.replace(/[^a-z0-9._-]/gi, "-").toLowerCase();
     const baseName = safeName.replace(/\.[^.]+$/, "");
     const isImage = file.type.startsWith("image/");
     const isVideo = file.type.startsWith("video/");
     const originalExt = safeName.split(".").pop() || "bin";
+    const maxVideoBytes = 5 * 1024 * 1024;
     let payload = file;
     let ext = originalExt;
 
@@ -706,15 +641,11 @@ products.sort((a, b) => {
       payload = await compressImage(file);
       ext = "webp";
     } else if (isVideo) {
-      try {
-        payload = await compressVideo(file);
-        ext = "mp4";
-      } catch (err) {
-        console.warn("Video compression failed, uploading original file.", err);
-        showToast("Video compression failed, uploading original file.", "error");
-        payload = file;
-        ext = originalExt;
+      if (file.size > maxVideoBytes) {
+        throw new Error("Video uploads must be 5MB or less.");
       }
+      payload = file;
+      ext = originalExt;
     }
 
     const fileName = `${Date.now()}-${baseName}.${ext}`;
@@ -908,9 +839,17 @@ products.sort((a, b) => {
   });
 
   els.previewGallery.addEventListener("click", event => {
-    const button = event.target.closest(".preview-remove");
+    const button = event.target.closest("button[data-preview-key]");
     if (!button) return;
-    removeGallerySource(button.dataset.previewKey);
+
+    if (button.dataset.previewAction === "make-main") {
+      setPrimaryGallerySource(button.dataset.previewKey);
+      return;
+    }
+
+    if (button.classList.contains("preview-remove")) {
+      removeGallerySource(button.dataset.previewKey);
+    }
   });
 
   els.grid.addEventListener("click", event => {

@@ -3,6 +3,12 @@ document.addEventListener("DOMContentLoaded", async function () {
   var cats = QF.byId("home-categories");
   var feat = QF.byId("home-featured");
 
+  function recentFirst(a, b) {
+    var aTime = new Date(a.updated_at || a.created_at || 0).getTime();
+    var bTime = new Date(b.updated_at || b.created_at || 0).getTime();
+    return bTime - aTime;
+  }
+
   function skeleton(count) {
     return Array(count)
       .fill('<div class="skeleton-card"></div>')
@@ -10,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   if (cats) cats.innerHTML = skeleton(3);
-  if (feat) feat.innerHTML = skeleton(4);
+  if (feat) feat.innerHTML = skeleton(8);
 
   if (QF.loadProducts) {
     await QF.loadProducts();
@@ -27,10 +33,14 @@ document.addEventListener("DOMContentLoaded", async function () {
       .filter(function (p) {
         return p.featured;
       })
-      .slice(0, 4);
+      .sort(recentFirst)
+      .slice(0, 8);
 
     if (!items.length) {
-      items = (window.QF_PRODUCTS || []).slice(0, 4);
+      items = (window.QF_PRODUCTS || [])
+        .slice()
+        .sort(recentFirst)
+        .slice(0, 8);
     }
 
     feat.innerHTML = items.map(QF.productCardHTML).join("");

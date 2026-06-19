@@ -690,6 +690,23 @@ textarea {
   z-index: 2;
 }
 
+.preview-main-btn {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent-2);
+  color: #fff;
+  font-size: 11px;
+  cursor: pointer;
+  z-index: 2;
+}
+
 .preview-main,
 .preview-new {
   position: absolute;
