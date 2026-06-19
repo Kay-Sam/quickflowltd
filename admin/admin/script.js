@@ -614,16 +614,6 @@ products.sort((a, b) => {
   });
 }
 
-  async function toBlobURL(url, mimeType) {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to load ${url}`);
-    }
-
-    const buffer = await response.arrayBuffer();
-    return URL.createObjectURL(new Blob([buffer], { type: mimeType }));
-  }
-
   async function getFFmpeg() {
     if (ffmpegInstance) return ffmpegInstance;
 
@@ -634,10 +624,11 @@ products.sort((a, b) => {
 
       ffmpegInstance = new window.FFmpegWASM.FFmpeg();
       ffmpegLoadPromise = (async () => {
-        const baseURL = "../assets/js";
+        const coreURL = new URL("../assets/js/ffmpeg-core.js", window.location.href).href;
+        const wasmURL = new URL("../assets/js/ffmpeg-core.wasm", window.location.href).href;
         await ffmpegInstance.load({
-          coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-          wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
+          coreURL,
+          wasmURL,
         });
         return ffmpegInstance;
       })().catch(err => {
@@ -707,13 +698,26 @@ products.sort((a, b) => {
     const baseName = safeName.replace(/\.[^.]+$/, "");
     const isImage = file.type.startsWith("image/");
     const isVideo = file.type.startsWith("video/");
-    const ext = isImage ? "webp" : (isVideo ? "mp4" : (safeName.split(".").pop() || "bin"));
+    const originalExt = safeName.split(".").pop() || "bin";
+    let payload = file;
+    let ext = originalExt;
+
+    if (isImage) {
+      payload = await compressImage(file);
+      ext = "webp";
+    } else if (isVideo) {
+      try {
+        payload = await compressVideo(file);
+        ext = "mp4";
+      } catch (err) {
+        console.warn("Video compression failed, uploading original file.", err);
+        showToast("Video compression failed, uploading original file.", "error");
+        payload = file;
+        ext = originalExt;
+      }
+    }
+
     const fileName = `${Date.now()}-${baseName}.${ext}`;
-    const payload = isImage
-      ? await compressImage(file)
-      : isVideo
-        ? await compressVideo(file)
-        : file;
 
     const { error } = await supabaseClient.storage
       .from("products")
