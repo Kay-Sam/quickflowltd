@@ -812,7 +812,9 @@ products.sort((a, b) => {
 
       closeModal();
       showToast(editingId ? "Product updated successfully." : "Product added successfully.");
-      await loadProducts();
+      void loadProducts().catch(err => {
+        console.warn("Product refresh failed after save:", err);
+      });
     } catch (err) {
       showToast(err.message || "Could not save product.", "error");
     } finally {
@@ -836,7 +838,9 @@ products.sort((a, b) => {
     }
 
     showToast("Product deleted successfully.");
-    await loadProducts();
+    void loadProducts().catch(err => {
+      console.warn("Product refresh failed after delete:", err);
+    });
   }
 
   els.hamburger.addEventListener("click", () => {
