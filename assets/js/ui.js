@@ -1,6 +1,7 @@
 /* UI: header, footer, drawer, FAB injected on every page */
 (function(){
   var S = window.QF_SITE || {};
+  var shellInjected = false;
 
   function navLinks(active){
     var items = [
@@ -203,17 +204,25 @@ QF.UI = {
   pageHero: pageHero,
   updateCartBadge: updateCartBadge
 };
+
+function injectShell() {
+  if (shellInjected || !document.body) return;
+  shellInjected = true;
+  injectHeader();
+  injectFooter();
+  injectDrawer();
+}
+
+injectShell();
+
 document.addEventListener("DOMContentLoaded", function () {
+  injectShell();
 
   document.title =
     (document.title || S.name) +
     (document.title.indexOf(S.name) > -1
       ? ""
       : " — " + (S.name || ""));
-
-  injectHeader();
-  injectFooter();
-  injectDrawer();
 
   const fab = document.querySelector(".wa-fab");
   const hero = document.querySelector(".hero");
