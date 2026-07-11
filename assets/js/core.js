@@ -24,7 +24,8 @@ QF.escape = function(s){
 };
 
 QF.findProduct = function(id){
-  return (window.QF_PRODUCTS||[]).find(function(p){ return p.id===id; });
+  var target = String(id == null ? "" : id);
+  return (window.QF_PRODUCTS||[]).find(function(p){ return String(p.id)===target; });
 };
 
 QF.findCategory = function(slug){

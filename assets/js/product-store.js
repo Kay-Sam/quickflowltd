@@ -10,7 +10,27 @@
   }
 
   function normalizeMedia(product) {
-    if (Array.isArray(product.media) && product.media.length) return product.media;
+    if (Array.isArray(product.media) && product.media.length) {
+      return product.media.map(function (item) {
+        if (!item) return null;
+        if (typeof item === "string") {
+          if (item.indexOf("|") > -1) {
+            var parts = item.split("|");
+            var type = parts[0] === "video" ? "video" : "image";
+            var src = parts.slice(1).join("|").trim();
+            return src ? { type: type, src: src } : null;
+          }
+          return item.trim() ? { type: "image", src: item.trim() } : null;
+        }
+        if (item.src) {
+          return {
+            type: item.type === "video" ? "video" : "image",
+            src: item.src,
+          };
+        }
+        return null;
+      }).filter(Boolean);
+    }
     if (Array.isArray(product.images) && product.images.length) {
       return product.images.map(function (src) {
         return { type: "image", src: src };

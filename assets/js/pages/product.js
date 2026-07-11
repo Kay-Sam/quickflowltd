@@ -1,6 +1,10 @@
 document.addEventListener("DOMContentLoaded", async function () {
   if (QF.loadProducts) {
-    await QF.loadProducts();
+    try {
+      await QF.loadProducts();
+    } catch (err) {
+      console.warn("Product loading failed, using available product data", err);
+    }
   }
 
   const id = QF.qs("id");
@@ -187,13 +191,21 @@ const galleryHTML = `
      ACTION BUTTONS
   ========================= */
 
-  const actionButtons = p.catalog
-    ? `
-      <a class="btn btn-primary btn-lg" href="products.html?cat=spare-parts">View Spare Parts Catalogue</a>
+  const isCatalogueProduct = p.catalog || p.pdf;
+  const listHref = p.category ? "products.html?cat=" + encodeURIComponent(p.category) : "products.html";
+  const listLabel = p.category === "spare-parts" ? "View Spare Parts Catalogue" : "View Products List";
 
-      <a class="btn btn-outline btn-lg" href="${p.pdf || "#"}" target="_blank">
-        View Price List (PDF)
-      </a>
+  const actionButtons = isCatalogueProduct
+    ? `
+      <a class="btn btn-primary btn-lg" href="${listHref}">${listLabel}</a>
+
+      ${
+        p.pdf
+          ? `<a class="btn btn-outline btn-lg" href="${p.pdf}" target="_blank" rel="noopener">
+        View Price List
+      </a>`
+          : ""
+      }
 
       <a class="btn btn-whatsapp btn-lg" target="_blank" rel="noopener"
         href="${QF.waLink("Hello, I want the spare parts catalogue details")}">

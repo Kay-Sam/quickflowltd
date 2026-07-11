@@ -44,9 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
     specs: document.getElementById("specs"),
     galleryImages: document.getElementById("galleryImages"),
     image: document.getElementById("image"),
+    pdf: document.getElementById("pdf"),
     previewGallery: document.getElementById("previewGallery"),
     inStock: document.getElementById("in_stock"),
     featured: document.getElementById("featured"),
+    catalog: document.getElementById("catalog"),
   };
 
   let products = [];
@@ -89,6 +91,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (src.startsWith("/")) return src;
     if (src.startsWith("../")) return src;
     return "../" + src.replace(/^\.?\//, "");
+  }
+
+  function displayFileName(src) {
+    if (!src) return "";
+    try {
+      const path = new URL(src, location.href).pathname;
+      return decodeURIComponent(path.split("/").pop() || src);
+    } catch (err) {
+      return src.split("/").pop() || src;
+    }
   }
 
   function normalizeMediaItem(item) {
@@ -338,6 +350,9 @@ document.addEventListener("DOMContentLoaded", () => {
     els.form.reset();
     els.inStock.checked = true;
     els.featured.checked = false;
+    els.catalog.checked = false;
+    els.pdf.dataset.currentPdf = "";
+    els.pdf.title = "";
     els.galleryImages.value = "";
     renderPreview([]);
     els.modalTitle.textContent = "Add Product";
@@ -362,6 +377,11 @@ document.addEventListener("DOMContentLoaded", () => {
       els.galleryImages.value = serializeGallery(productImageList(product));
       els.inStock.checked = product.in_stock ?? product.inStock ?? true;
       els.featured.checked = product.featured ?? false;
+      els.catalog.checked = Boolean(product.catalog || product.pdf);
+      if (product.pdf) {
+        els.pdf.dataset.currentPdf = product.pdf;
+        els.pdf.title = "Current document: " + displayFileName(product.pdf);
+      }
       renderPreview(currentPreviewSources());
     }
 
@@ -663,10 +683,45 @@ products.sort((a, b) => {
     return data.publicUrl;
   }
 
+  async function uploadDocumentFile(file) {
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    const allowedExtensions = ["pdf", "doc", "docx"];
+    const safeName = file.name.replace(/[^a-z0-9._-]/gi, "-").toLowerCase();
+    const ext = (safeName.split(".").pop() || "").toLowerCase();
+
+    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(ext)) {
+      throw new Error("Document uploads must be PDF, DOC, or DOCX files.");
+    }
+
+    const fileName = `docs/${Date.now()}-${safeName}`;
+
+    const { error } = await supabaseClient.storage
+      .from("products")
+      .upload(fileName, file);
+
+    if (error) throw error;
+
+    const { data } = supabaseClient.storage
+      .from("products")
+      .getPublicUrl(fileName);
+
+    return data.publicUrl;
+  }
+
   async function uploadImageIfNeeded(existingImage) {
     const file = els.image.files[0];
     if (!file) return existingImage || "";
     return uploadMediaFile(file);
+  }
+
+  async function uploadDocumentIfNeeded(existingPdf) {
+    const file = els.pdf.files[0];
+    if (!file) return existingPdf || "";
+    return uploadDocumentFile(file);
   }
 
   function appendGalleryImage(item) {
@@ -684,6 +739,7 @@ products.sort((a, b) => {
 
     try {
       const existing = editingId ? products.find(product => product.id === editingId) : null;
+      const pdfUrl = await uploadDocumentIfNeeded((existing && existing.pdf) || "");
       const gallery = sanitizeGalleryItems(parseGallery(els.galleryImages.value));
       const imageUrl = await uploadImageIfNeeded((existing && existing.image) || ((gallery.find(function (item) {
         return item.type === "image";
@@ -723,6 +779,8 @@ products.sort((a, b) => {
         image: mainImage,
         images,
         media: mediaEntries.concat(existingVideos),
+        pdf: pdfUrl || null,
+        catalog: els.catalog.checked || Boolean(pdfUrl),
         in_stock: els.inStock.checked,
         featured: els.featured.checked,
       };
