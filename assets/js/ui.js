@@ -1,7 +1,9 @@
 /* UI: header, footer, drawer, FAB injected on every page */
 (function(){
   var S = window.QF_SITE || {};
-  var shellInjected = false;
+  var headerInjected = false;
+  var footerInjected = false;
+  var drawerInjected = false;
 
   function navLinks(active){
     var items = [
@@ -206,11 +208,19 @@ QF.UI = {
 };
 
 function injectShell() {
-  if (shellInjected || !document.body) return;
-  shellInjected = true;
-  injectHeader();
-  injectFooter();
-  injectDrawer();
+  if (!document.body) return;
+  if (!headerInjected && document.getElementById("qf-header")) {
+    headerInjected = true;
+    injectHeader();
+  }
+  if (!footerInjected && document.getElementById("qf-footer")) {
+    footerInjected = true;
+    injectFooter();
+  }
+  if (!drawerInjected) {
+    drawerInjected = true;
+    injectDrawer();
+  }
 }
 
 injectShell();
