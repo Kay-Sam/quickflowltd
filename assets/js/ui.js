@@ -145,9 +145,9 @@ QF.escape(S.address || "") +
   '<span class="footer-tagline">Power Solutions You Can Trust</span>'+
 '</div>'+
 
-  '<div class="footer-credit">'+
-    'Built by <a href="https://kaysotech.com.ng" target="_blank" rel="noopener">Kaysotech</a>'+
-  '</div>'+
+  // '<div class="footer-credit">'+
+  //   'Built by <a href="https://kaysotech.com.ng" target="_blank" rel="noopener">Kaysotech</a>'+
+  // '</div>'+
 
 '</div>'+
       '</div></footer>';
